@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 
 //Audit 기능 사용하기 위한 어노테이션 1
 @EntityListeners(AuditingEntityListener.class)
-//Spring이 User 객체 생성시 빈생성자로 생성하기 때문에
+//Spring이 Account 객체 생성시 빈생성자로 생성하기 때문에
 @NoArgsConstructor
 @Table(name = "account_tb")
 @Entity
