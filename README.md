@@ -34,3 +34,17 @@ public enum TransactionEnum {
     //이넘을 인식할 수 있도록
     private TransactionEnum gubun;  //WITHDRAW, DEPOSIT, TRANSAFER, ALL 
 ```
+
+### JUnit5 테스트에 영향을 주는 코드
+```java
+@Builder
+@AllArgsContructor
+//: 직접 풀 생성자 정의해서 @Builder 
+@Slf4j
+//: 직접 생성 private final Logger log = LoggerFactory.getLogger(getClass());
+@MappedSuperclass
+@EntityListeners(AuditingEntityListener.class)
+public abstract class BaseEntity {
+}
+//: BaseEntity 상속하는 방식 말고 변수로 직접 생성
+```
