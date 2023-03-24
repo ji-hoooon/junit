@@ -15,14 +15,14 @@ spring:
     hibernate:
       ddl-auto: create
     properties:
-      hibernate:
-        default_batch_fetch_size: 100
-        format_sql: true
-        show_sql: true
+      '[hibernate.default_batch_fetch_size]': 100
+      '[hibernate.format_sql]': true
+    show_sql: true
   output:
     ansi:
       enabled: always
 
-  logging:
-    level:
-      '[com.mino.bank]': DEBUG
+logging:
+  level:
+    '[com.mino.bank]': DEBUG
+    '[org.hibernate.type]': TRACE

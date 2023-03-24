@@ -36,3 +36,12 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+apply plugin: 'java'
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+    options.compilerArgs << "-parameters"
+}
+
+sourceCompatibility = 11
+targetCompatibility = 11

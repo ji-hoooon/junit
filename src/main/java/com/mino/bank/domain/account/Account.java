@@ -38,15 +38,12 @@ public class Account {
     //-> account.getUser().멤버 호출시에 lazy 발동하므로, 제어권을 사용자가 갖는다.
     @ManyToOne (fetch=FetchType.LAZY)
     private User user;  //컬럼명 기본값 : user_id
-
     @CreatedDate
     @Column(nullable = false)
     private LocalDateTime createdAt;
-
     @LastModifiedDate
     @Column(nullable = false)
     private LocalDateTime updatedAt;
-
     @Builder
     public Account(Long id, Long number, Long password, Long balance, User user, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;

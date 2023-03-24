@@ -48,3 +48,23 @@ public abstract class BaseEntity {
 }
 //: BaseEntity 상속하는 방식 말고 변수로 직접 생성
 ```
+
+
+### 자동 빌드 설정 (IntelliJ)
+
+- 1. build.gradle에 추가
+```java
+apply plugin: 'java'
+
+tasks.withType(JavaCompile) {
+options.encoding = 'UTF-8'
+options.compilerArgs << "-parameters"
+}
+
+sourceCompatibility = 11
+targetCompatibility = 11
+
+```
+- 2. Settings-Build, Execution, Deployment-Compiler-Build Project Automatically
+
+- 3. Settings-Advanced Setting-Allow auto-make to start~
