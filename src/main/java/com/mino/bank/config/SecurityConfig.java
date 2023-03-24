@@ -32,6 +32,7 @@ public class SecurityConfig {
     //1. JWT 서버를 만들기 위한 설정
     //2. JWT 필터 등록
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        log.debug("디버그 : filterChain 빈 등록됨");
         //iframe 사용안함
         http.headers().frameOptions().disable();
         //csrf 사용안함
@@ -57,6 +58,7 @@ public class SecurityConfig {
         return http.build();
     }
     public CorsConfigurationSource configurationSource(){
+        log.debug("디버그 : CorsConfigurationSource cors 설정돼 SecurityFilterChain에 등록됨");
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");    //HTTP 메서드와 자바스크립트 요청 허용

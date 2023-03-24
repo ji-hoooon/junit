@@ -6,7 +6,7 @@ server:
       force: true
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/security?serverTimezone=UTC&characterEncoding=UTF-8
+    url: jdbc:mysql://localhost:3306/security?serverTimezone=Asia/Seoul
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: mino
     password: 1234
@@ -25,4 +25,4 @@ spring:
 
   logging:
     level:
-      '[com.mino.bank]':DEBUG
+      '[com.mino.bank]': DEBUG
