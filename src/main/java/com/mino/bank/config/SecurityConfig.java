@@ -16,7 +16,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 
 //@Slf4j
-//private final Logger log = LoggerFactory.getLogger(getClass()); 대신해주는데, Junit 테스트 오류 발생
+//=private final Logger log = LoggerFactory.getLogger(getClass()); 대신해주는데, Junit 테스트 오류 발생
 @Configuration
 public class SecurityConfig {
     //로깅
@@ -33,12 +33,16 @@ public class SecurityConfig {
     //2. JWT 필터 등록
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         log.debug("디버그 : filterChain 빈 등록됨");
-        //iframe 사용안함
+        //iframe 사용안함 (인라인 프레임을 생성하는 태그로 타 사이트의 컨텐츠 혹은 타 페이지를 삽입)
         http.headers().frameOptions().disable();
         //csrf 사용안함
+        //:Cross-Site Request Forgery
+        // 타 사이트에서 인증된 사용자의 권한을 이용해서 공격하는 방식으로,
+        // 페이지 로드시 CSRF 토큰을 생성해 해당 토큰을 가진 요청만 처리함으로써 방지한다.
         http.csrf().disable();
         //다른 서버의 자바스크립트 요청 거부 허용으로 (거부할 사항을 Null)
-        //: cross origin resource sharing
+        //: Cross Origin Resource Sharing
+        // 프론트엔드와 백엔드의 도메인을 다르게 설정해서 백엔드에서 프론트엔드의 요청만 응답하도록 설정한다.
         http.cors().configurationSource(configurationSource());
 
         //stateless 전략으로 사용하기 위해 jSessionId를 서버쪽에서 관리안하도록 설정

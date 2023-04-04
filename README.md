@@ -68,3 +68,24 @@ targetCompatibility = 11
 - 2. Settings-Build, Execution, Deployment-Compiler-Build Project Automatically
 
 - 3. Settings-Advanced Setting-Allow auto-make to start~
+
+### 스프링 시큐리티
+
+#### 필터 체인 설정 (1)
+##### : CORS, CSRF, 인증 방식, JWT, Filter, 인증 체크, 권한 체크, 오류 제어
+1. 보안성이 떨어지는 iframe, 인증시 팝업창을 띄우는 HttpBasic, JWT를 이용하기 위해 세션ID를 사용하지 않도록 설정
+2. 초기 세팅시에는 CSRF 설정을 비활성화 CORS 설정 파일은 null로 설정 후 나중에 수정한다.
+3. 스프링에서 제공하는 폼로그인 비활성화
+4. authorizeRequests() 메서드 체인을 이용해 허용되는 요청 설정
+   1. anyMatchers().authenticated() : 인증이 필요한 페이지의 uri 패턴 설정
+   2. anyMatchers().hasRole() : 권한이 필요한 페이지의 uri 패턴 설정
+   3. anyRequest().permitAll() : 그 외의 모든 요청은 허용
+
+
+#### CORS 설정 (1)
+##### : 허용할 요청에 대한 설정 작성
+1. addAllowedHeader() : 허용할 헤더
+2. addAllowedMethod() : 허용할 HTTP 메서드
+3. addAllowedOriginPattern() : 허용할 IP 주소 (추후 프론트엔드 IP만 허용)
+4. setAllowCredentials(true) : 클라이언트의 쿠키 요청 허용여부
+5. UrlBasedCoresConfigurationSource 객체 생성해, registerCorsConfiguration() : cors 설정을 사용할 URI 패턴 지정해 CORS 레지스트리에 등록
