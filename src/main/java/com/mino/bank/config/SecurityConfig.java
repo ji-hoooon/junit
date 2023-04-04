@@ -1,6 +1,8 @@
 package com.mino.bank.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mino.bank.domain.user.UserEnum;
+import com.mino.bank.dto.ResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,9 +58,15 @@ public class SecurityConfig {
         //응답의 일관성을 만들기 위해 Exception 가로채기
         http.exceptionHandling().authenticationEntryPoint(
                 (request, response, authenticationException) ->{
-//                    response.setContentType("application/json; charset=utf-8");
+                    //응답을 JSON으로 만들기
+                    ObjectMapper objectMapper=new ObjectMapper();
+                    ResponseDto<?> responseDto=new ResponseDto<>(-1, "권한 없음", null);
+                    String responseBody = objectMapper.writeValueAsString(responseDto);
+
+                    response.setContentType("application/json; charset=utf-8");
                     response.setStatus(403);
-                    response.getWriter().println("error");
+//                    response.getWriter().println("error");
+                    response.getWriter().println(responseBody);
                     //공통적인 응답 DTO 작성 필요
                 }
         );
@@ -68,7 +76,6 @@ public class SecurityConfig {
 
 
         //접근 권한 설정
-
         http.authorizeRequests()
                 .antMatchers("/api/s/**").authenticated()
                 .antMatchers("/api/admin/**").hasRole("" + UserEnum.ADMIN) //default prefix가 'ROLE_'
