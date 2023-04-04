@@ -53,7 +53,22 @@ public class SecurityConfig {
         //httpbasic 방식 사용안함 (팝업창 이용해서 사용자 인증하는 방식)
         http.httpBasic().disable();
 
+        //응답의 일관성을 만들기 위해 Exception 가로채기
+        http.exceptionHandling().authenticationEntryPoint(
+                (request, response, authenticationException) ->{
+//                    response.setContentType("application/json; charset=utf-8");
+                    response.setStatus(403);
+                    response.getWriter().println("error");
+                    //공통적인 응답 DTO 작성 필요
+                }
+        );
+        //인증이 되지 않은 사용자에 대한 예외처리하는 메서드로 파라미터는
+        // ExceptionTranslationFilter로 필터링 되는 AuthenticationEntryPoint 객체
+        //: AuthenticationEntryPoint의 commence 메서드는 파라미터로 request, response, AuthenticationException
+
+
         //접근 권한 설정
+
         http.authorizeRequests()
                 .antMatchers("/api/s/**").authenticated()
                 .antMatchers("/api/admin/**").hasRole("" + UserEnum.ADMIN) //default prefix가 'ROLE_'

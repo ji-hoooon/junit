@@ -89,3 +89,41 @@ targetCompatibility = 11
 3. addAllowedOriginPattern() : 허용할 IP 주소 (추후 프론트엔드 IP만 허용)
 4. setAllowCredentials(true) : 클라이언트의 쿠키 요청 허용여부
 5. UrlBasedCoresConfigurationSource 객체 생성해, registerCorsConfiguration() : cors 설정을 사용할 URI 패턴 지정해 CORS 레지스트리에 등록
+
+
+
+## 테스트
+### (1) Mockito를 이용한 통합 테스트
+#### @AutoConfigureMockMvc : 가짜 환경에 MockMvc가 등록 
+#### @SpringBootTest(webEnvironment = WebEnvironment.MOCK) : 통합 테스트를 가짜 환경에서 수행하는 Mockito 테스트
+
+```java
+//가짜 환경에 MockMvc가 등록됨
+@AutoConfigureMockMvc
+//통합 테스트 수행
+//: 가짜 환경에서 수행하는 Mockito 테스트
+@SpringBootTest(webEnvironment = WebEnvironment.MOCK)
+public class SecurityConfigTest {
+    //가짜 환경에 등록된 MockMvc를 의존성 주입
+    @Autowired
+    private MockMvc mvc;
+
+    @Test
+    public void authentication_test() throws Exception{
+        //given
+
+        //when
+        ResultActions resultActions=mvc.perform(MockMvcRequestBuilders.get(("/api/s/hello")));
+
+        //웹, PostMan, 테스트에서 응답의 일관성을 유지하기 위해서 코드 변경 필요
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        int httpStatusCode = resultActions.andReturn().getResponse().getStatus();
+        System.out.println("테스트 : "+responseBody);
+        //:바디에 담기는 데이터가 없음
+        System.out.println("테스트 : "+httpStatusCode);
+        //:403출력
+
+        //then
+    }
+```
+### 응답의 일관성이 없는 문제 존재 -> 시큐리티에서 Exception 가로채서 응답을 만든다.
