@@ -1,5 +1,6 @@
 package com.mino.bank.config;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -8,6 +9,9 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
+import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 //가짜 환경에 MockMvc가 등록됨
@@ -20,6 +24,7 @@ public class SecurityConfigTest {
     @Autowired
     private MockMvc mvc;
 
+    //서버는 일관성있게 에러가 리턴되어야 하므로, 프론트에 전달되기 전 모든 에러를 제어
     @Test
     public void authentication_test() throws Exception{
         //given
@@ -33,9 +38,11 @@ public class SecurityConfigTest {
         System.out.println("테스트 : "+responseBody);
         //:바디에 담기는 데이터가 없음
         System.out.println("테스트 : "+httpStatusCode);
-        //:403출력
+        //:403 출력 -> 401 출력이 필요
 
         //then
+
+        assertThat(httpStatusCode).isEqualTo(401);
     }
     @Test
     public void authorization_test() throws Exception{

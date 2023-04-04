@@ -93,6 +93,8 @@ targetCompatibility = 11
 
 
 ## 테스트
+### : 직접 테스트시 인증이 필요한 페이지에도 403 에러를 출력하는 문제 해결 필요
+
 ### (1) Mockito를 이용한 통합 테스트
 #### @AutoConfigureMockMvc : 가짜 환경에 MockMvc가 등록 
 #### @SpringBootTest(webEnvironment = WebEnvironment.MOCK) : 통합 테스트를 가짜 환경에서 수행하는 Mockito 테스트
@@ -127,3 +129,22 @@ public class SecurityConfigTest {
     }
 ```
 ### 응답의 일관성이 없는 문제 존재 -> 시큐리티에서 Exception 가로채서 응답을 만든다.
+```java
+        //응답의 일관성을 만들기 위해 Exception 가로채기
+        http.exceptionHandling().authenticationEntryPoint(
+                (request, response, authenticationException) ->{
+                    //응답을 JSON으로 만들기
+                    ObjectMapper objectMapper=new ObjectMapper();
+                    ResponseDto<?> responseDto=new ResponseDto<>(-1, "권한 없음", null);
+                    String responseBody = objectMapper.writeValueAsString(responseDto);
+
+                    response.setContentType("application/json; charset=utf-8");
+                    response.setStatus(403);
+//                    response.getWriter().println("error");
+                    response.getWriter().println(responseBody);
+                    //공통적인 응답 DTO 작성 필요
+                }
+        );
+```
+
+### 인증이 필요한 페이지에서 403 에러가 나는 것을 직접 401 오류코드로 변경

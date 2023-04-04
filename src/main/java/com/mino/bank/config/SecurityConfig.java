@@ -3,11 +3,13 @@ package com.mino.bank.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mino.bank.domain.user.UserEnum;
 import com.mino.bank.dto.ResponseDto;
+import com.mino.bank.util.CustomResponseUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -58,16 +60,7 @@ public class SecurityConfig {
         //응답의 일관성을 만들기 위해 Exception 가로채기
         http.exceptionHandling().authenticationEntryPoint(
                 (request, response, authenticationException) ->{
-                    //응답을 JSON으로 만들기
-                    ObjectMapper objectMapper=new ObjectMapper();
-                    ResponseDto<?> responseDto=new ResponseDto<>(-1, "권한 없음", null);
-                    String responseBody = objectMapper.writeValueAsString(responseDto);
-
-                    response.setContentType("application/json; charset=utf-8");
-                    response.setStatus(403);
-//                    response.getWriter().println("error");
-                    response.getWriter().println(responseBody);
-                    //공통적인 응답 DTO 작성 필요
+                    CustomResponseUtil.unAuthentication(response, "로그인이 필요합니다.");
                 }
         );
         //인증이 되지 않은 사용자에 대한 예외처리하는 메서드로 파라미터는
