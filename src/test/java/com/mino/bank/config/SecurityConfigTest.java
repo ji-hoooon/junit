@@ -48,10 +48,18 @@ public class SecurityConfigTest {
     public void authorization_test() throws Exception{
         //given
 
-
         //when
+        ResultActions resultActions=mvc.perform(MockMvcRequestBuilders.get(("/api/s/hello")));
 
+        //웹, PostMan, 테스트에서 응답의 일관성을 유지하기 위해서 코드 변경 필요
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        int httpStatusCode = resultActions.andReturn().getResponse().getStatus();
+        System.out.println("테스트 : "+responseBody);
+        //:바디에 담기는 데이터가 없음
+        System.out.println("테스트 : "+httpStatusCode);
+        //:401 출력
         //then
 
+        assertThat(httpStatusCode).isEqualTo(401);
     }
 }

@@ -59,8 +59,16 @@ public class SecurityConfig {
 
         //응답의 일관성을 만들기 위해 Exception 가로채기
         http.exceptionHandling().authenticationEntryPoint(
+
                 (request, response, authenticationException) ->{
-                    CustomResponseUtil.unAuthentication(response, "로그인이 필요합니다.");
+                    String uri = request.getRequestURI();
+                    log.debug("디버그 : "+ uri);
+                    if(uri.contains("admin")){
+                        CustomResponseUtil.unAuthorization(response, "관리자만 접근이 가능합니다.");
+                    }else{
+                        CustomResponseUtil.unAuthentication(response, "로그인이 필요합니다.");
+                    }
+
                 }
         );
         //인증이 되지 않은 사용자에 대한 예외처리하는 메서드로 파라미터는
