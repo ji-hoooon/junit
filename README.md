@@ -148,3 +148,70 @@ public class SecurityConfigTest {
 ```
 
 ### 인증이 필요한 페이지에서 403 에러가 나는 것을 직접 401 오류코드로 변경
+### 권한이 필요한 페이지에서 403 에러로 처리하기 위해 uri 파싱해 admin인 경우에만 403 오류 처리
+```java
+public class CustomResponseUtil {
+    private static final Logger log = LoggerFactory.getLogger(CustomResponseUtil.class);
+    public static void unAuthentication(HttpServletResponse response, String msg){
+        //파싱 오류가 날 경우 예외 처리
+        try{
+            //응답을 JSON으로 만들기
+            ObjectMapper objectMapper=new ObjectMapper();
+//            ResponseDto<?> responseDto=new ResponseDto<>(-1, "인증되지 않은 사용자", null);
+            ResponseDto<?> responseDto=new ResponseDto<>(-1, msg, null);
+            String responseBody = objectMapper.writeValueAsString(responseDto);
+
+            response.setContentType("application/json; charset=utf-8");
+            response.setStatus(401);
+            //response.getWriter().println("error");
+            response.getWriter().println(responseBody);
+            //공통적인 응답 DTO 작성 필요
+        }catch (Exception e){
+            log.error("서버 파싱 에러");
+
+        }
+
+
+    }
+    public static void unAuthorization(HttpServletResponse response, String msg){
+        //파싱 오류가 날 경우 예외 처리
+        try{
+            //응답을 JSON으로 만들기
+            ObjectMapper objectMapper=new ObjectMapper();
+//            ResponseDto<?> responseDto=new ResponseDto<>(-1, "권한이 없는 사용자", null);
+            ResponseDto<?> responseDto=new ResponseDto<>(-1, msg, null);
+            String responseBody = objectMapper.writeValueAsString(responseDto);
+
+            response.setContentType("application/json; charset=utf-8");
+            response.setStatus(403);
+            //response.getWriter().println("error");
+            response.getWriter().println(responseBody);
+            //공통적인 응답 DTO 작성 필요
+        }catch (Exception e){
+            log.error("서버 파싱 에러");
+
+        }
+
+
+    }
+}
+```
+```java
+//응답의 일관성을 만들기 위해 Exception 가로채기
+        http.exceptionHandling().authenticationEntryPoint(
+
+                (request, response, authenticationException) ->{
+                    String uri = request.getRequestURI();
+                    log.debug("디버그 : "+ uri);
+                    if(uri.contains("admin")){
+                        CustomResponseUtil.unAuthorization(response, "관리자만 접근이 가능합니다.");
+                    }else{
+                        CustomResponseUtil.unAuthentication(response, "로그인이 필요합니다.");
+                    }
+
+                }
+        );
+        //인증이 되지 않은 사용자에 대한 예외처리하는 메서드로 파라미터는
+        // ExceptionTranslationFilter로 필터링 되는 AuthenticationEntryPoint 객체
+        //: AuthenticationEntryPoint의 commence 메서드는 파라미터로 request, response, AuthenticationException
+```
