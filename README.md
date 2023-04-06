@@ -215,3 +215,17 @@ public class CustomResponseUtil {
         // ExceptionTranslationFilter로 필터링 되는 AuthenticationEntryPoint 객체
         //: AuthenticationEntryPoint의 commence 메서드는 파라미터로 request, response, AuthenticationException
 ```
+
+
+### 회원가입
+1. UserService에서 회원가입 메서드와 사용할 DTO 작성
+2. 회원 가입 메서드 로직 
+   3. 사용자 이름 중복체크
+   4. 패스워드 인코딩 + 회원가입
+   5. DTO 응답
+
+
+1. 사용자 이름 중복체크
+   2. UserRepository 의존성 주입
+   3. 리포지토리에 findByUsername 메서드 작성
+   4. 사용자이름 중복 발생시 예외를 처리하기 위한 핸들러 작성
