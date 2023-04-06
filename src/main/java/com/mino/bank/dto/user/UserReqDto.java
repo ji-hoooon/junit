@@ -6,15 +6,22 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import javax.validation.constraints.NotEmpty;
+
+
 public class UserReqDto {
     //임시로 서비스 안에 회원가입 요청을 위한 DTO 작성
     //: 유효성 검사 필요
     @Getter
     @Setter
     public static class JoinReqDto {
+        @NotEmpty
         private String username;
+        @NotEmpty
         private String password;
+        @NotEmpty
         private String email;
+        @NotEmpty
         private String fullname;
 
         //DTO를 엔티티로 변환하는 메서드 작성

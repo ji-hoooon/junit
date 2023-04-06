@@ -12,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.Valid;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -32,7 +33,7 @@ public class UserService {
      * 2. 패스워드 인코딩
      * 3. dto 응답
      */
-    public JoinRespDto 회원가입(JoinReqDto joinReqDto){
+    public JoinRespDto 회원가입(@Valid JoinReqDto joinReqDto){
 //     1. 사용자 이름 중복 체크
         Optional<User> userOP = userRepository.findByUsername(joinReqDto.getUsername());
         if(userOP.isPresent()){
