@@ -303,3 +303,45 @@ public class UserServiceTest extends DummyObject {
     }
 }
 ```
+
+### 유효성 검사 수행
+1. 	implementation 'org.springframework.boot:spring-boot-starter-validation' 의존성 주입
+2. @NotEmpty와 같이 Validation 제약 조건 걸기
+3. 검증 수행할 객체 앞에 @Valid 어노테이션 붙이고, 바로 뒤에 BindingResult로 에러들을 Map으로 받는다.
+
+### 유효성 검사 AOP로 등록
+1. 유효성 검사를 위한 Advice 클래스 작성
+   1. 해당 클래스는 body가 존재하는 핸들러 메서드에서만 수행
+   2. 따라서 @PostMapping, @PutMapping이 붙은 메서드에서만 수행
+2. 유효성 검사 예외 클래스 작성
+3. ExceptionHandler에 작성한 예외 클래스 등록
+4. 이전에 작성한 유효성 검사 로직을 JointPoint 메서드 실행 전 후 제어하도록 @Around로 Advice 메서드 작성
+```java
+    //@Before, @After
+    @Around("postMapping() || putMapping()")    //1. @PostMapping(), @PutMapping() 어노테이션이 붙은 모든 메서드에서
+    //: joinPoint 메서드 실행 전 후 제어 가능한 어노테이션
+    public Object validationAdvice(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+        Object[] args = proceedingJoinPoint.getArgs();  //joinPoint의 매개변수
+        for(Object arg: args){
+            if(arg instanceof BindingResult){
+                //2. 에러가 존재할 경우 -> 예외 던짐
+                BindingResult bindingResult = (BindingResult) arg;
+                //담긴 에러를 처리
+                if(bindingResult.hasErrors()){
+                    //Map으로 담는다
+                    Map<String, String> errorMap  = new HashMap<>();
+                    for (FieldError error:bindingResult.getFieldErrors()) {
+                        errorMap.put(error.getField(), error.getDefaultMessage());
+                    }
+                    //return new ResponseEntity<>(new ResponseDto<>(-1, "유효성 검사 실패", errorMap), HttpStatus.BAD_REQUEST);
+                    //유효성 검사 예외를 던진다.
+                    throw new CustomValidationException("유효성검사 실패", errorMap);
+                }
+            }
+
+        }
+        //3. 에러가 존재하지 않을 경우 해당 메서드 정상 수행
+        return proceedingJoinPoint.proceed();
+    }
+```
+
