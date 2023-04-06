@@ -1,10 +1,10 @@
 package com.mino.bank.service;
 
+import com.mino.bank.config.dummy.DummyObject;
 import com.mino.bank.domain.user.User;
-import com.mino.bank.domain.user.UserEnum;
 import com.mino.bank.domain.user.UserRepository;
-import com.mino.bank.service.UserService.JoinReqDto;
-import org.assertj.core.api.Assertions;
+import com.mino.bank.dto.user.UserReqDto.JoinReqDto;
+import com.mino.bank.dto.user.UserRespDto.JoinRespDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,9 +13,6 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import javax.swing.text.html.Option;
-
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,7 +21,7 @@ import static org.mockito.Mockito.when;
 
 //서비스 테스트를 위한 모키토 환경은 스프링 관련 빈들이 존재하지 않는다.
 @ExtendWith(MockitoExtension.class)
-public class UserServiceTest {
+public class UserServiceTest extends DummyObject {
 
     //가짜 환경으로 주입하기 위한 어노테이션
     //: Mock으로 만든 가짜 객체와, Spy로 가져온 진짜 객체를 Inject한다.
@@ -60,20 +57,24 @@ public class UserServiceTest {
 
         //stub2
         //user 객체를 리턴하는 스텁
-        User user= User.builder()
-                .id(1L)
-                .username("ssar")
-                .password("1234")
-                .email("ssar@nate.com")
-                .fullname("pepe ssar")
-                .role(UserEnum.CUSTOMER)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
+        //: 패스워드 인코딩도 필요
+//        User user= User.builder()
+//                .id(1L)
+//                .username("ssar")
+//                .password("1234")
+//                .email("ssar@nate.com")
+//                .fullname("pepe ssar")
+//                .role(UserEnum.CUSTOMER)
+//                .createdAt(LocalDateTime.now())
+//                .updatedAt(LocalDateTime.now())
+//                .build();
+        // 더미 오브젝트로 리팩토링
+        User user = newMockUser(1L, "ssar", "pepe ssar");
+
         when(userRepository.save(any())).thenReturn(user);
 
         //when
-        UserService.JoinRespDto joinRespDto = userService.회원가입(joinReqDto);
+        JoinRespDto joinRespDto = userService.회원가입(joinReqDto);
         System.out.println("테스트 : "+joinRespDto);
         //then
 
