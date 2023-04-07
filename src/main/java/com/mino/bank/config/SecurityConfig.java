@@ -56,6 +56,10 @@ public class SecurityConfig {
         //httpbasic 방식 사용안함 (팝업창 이용해서 사용자 인증하는 방식)
         http.httpBasic().disable();
 
+        //jwt 필터 등록
+        http.apply(new CustomSecurityFilterManager());
+
+
         //응답의 일관성을 만들기 위해 Exception 가로채기
         http.exceptionHandling().authenticationEntryPoint(
 
@@ -101,7 +105,7 @@ public class SecurityConfig {
     //(1) HttpSecurity가 없기 때문에 상속해서 캐스팅
     //: extends AbstractHttpConfigurer<CustomSecurityFilterManager, HttpSecurity>
     //(2) AuthenticationManager가 없기 때문에 생성
-    //:            AuthenticationManager authenticationManager=builder.getSharedObject(AuthenticationManager.class);
+    //: AuthenticationManager authenticationManager=builder.getSharedObject(AuthenticationManager.class);
     public class CustomSecurityFilterManager extends AbstractHttpConfigurer<CustomSecurityFilterManager, HttpSecurity>{
         @Override
         public void configure(HttpSecurity builder) throws Exception {

@@ -34,7 +34,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     //-> Post :/api/login시 동작하는 메서드
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-
+        log.debug("디버그 : attemptAuthentication 호출됨");
         //cmd+option+T
         try {
             //(1) request 객체의 json 데이터 꺼내기
@@ -63,6 +63,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     //return authentication 잘 작동하면 successfulAuthentication 메서드 호출
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+        log.debug("디버그 : successfulAuthentication 호출됨");
 
         //(1) 파라미터의 authResult에서 로그인 유저 객체 얻기
         LoginUser loginUser = (LoginUser) authResult.getPrincipal();
