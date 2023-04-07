@@ -1,16 +1,15 @@
 package com.mino.bank.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mino.bank.config.jwt.JwtAuthenticationFilter;
 import com.mino.bank.domain.user.UserEnum;
-import com.mino.bank.dto.ResponseDto;
 import com.mino.bank.util.CustomResponseUtil;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -96,5 +95,19 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", configuration); //작성한 설정을 모든 주소에 적용
 
         return source;
+    }
+
+    //JWT 필터 등록
+    //(1) HttpSecurity가 없기 때문에 상속해서 캐스팅
+    //: extends AbstractHttpConfigurer<CustomSecurityFilterManager, HttpSecurity>
+    //(2) AuthenticationManager가 없기 때문에 생성
+    //:            AuthenticationManager authenticationManager=builder.getSharedObject(AuthenticationManager.class);
+    public class CustomSecurityFilterManager extends AbstractHttpConfigurer<CustomSecurityFilterManager, HttpSecurity>{
+        @Override
+        public void configure(HttpSecurity builder) throws Exception {
+            AuthenticationManager authenticationManager=builder.getSharedObject(AuthenticationManager.class);
+            builder.addFilter(new JwtAuthenticationFilter(authenticationManager));
+            super.configure(builder);
+        }
     }
 }
