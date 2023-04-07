@@ -345,3 +345,8 @@ public class UserServiceTest extends DummyObject {
     }
 ```
 
+### JWT 인증과 인가
+1. 토큰에 필요한 시크릿 키, 만료시간, 접두사, 헤더를 담은 JwtVO 작성
+2. UserDetails를 구현한 LoginUser 클래스 작성
+3. UserDetailsService를 구현한 LoginService 작성
+4. 토큰 생성과 검증을 수행하는 JwtProcess 작성
