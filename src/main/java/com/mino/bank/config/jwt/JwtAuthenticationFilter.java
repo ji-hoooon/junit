@@ -76,6 +76,5 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         //(5) JSON 응답 DTO 반환
         CustomResponseUtil.success(response, loginRespDto);
-
     }
 }

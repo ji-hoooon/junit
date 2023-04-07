@@ -350,3 +350,77 @@ public class UserServiceTest extends DummyObject {
 2. UserDetails를 구현한 LoginUser 클래스 작성
 3. UserDetailsService를 구현한 LoginService 작성
 4. 토큰 생성과 검증을 수행하는 JwtProcess 작성
+5. 필터 작성
+6. 필터 메서드 (1) attemptAuthentication 메서드: 로그인 인증 완료시 강제 로그인
+   1. 로그인을 위한 DTO 작성 : UserReqDto의 내부클래스로 LoginReqDto (필터에서는 컨트롤러 전이므로 유효성 검사 불가능)
+   2. 강제 로그인 : 토큰 방식의 인증을 사용하더라도 시큐리티의 권한체크, 인증체크 기능을 사용하기 위해 세션 생성 -> 임시 세션으로, request와 response 완료시 끝 
+   3. authenticationEntryPoint에 걸리도록 InternalAuthenticationServiceException 예외를 던짐
+```java
+    @Override
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+
+        //cmd+option+T
+        try {
+            //(1) request 객체의 json 데이터 꺼내기
+            ObjectMapper om =new ObjectMapper();
+            //(2) 로그인을 위한 DTO 작성
+            //: UserReqDto의 내부클래스로 LoginReqDto (필터에서는 컨트롤러 전이므로 유효성 검사 불가능)
+            LoginReqDto loginReqDto=om.readValue(request.getInputStream(), LoginReqDto.class);
+
+            //(3) 강제 로그인
+            //: 토큰 방식의 인증을 사용하더라도 시큐리티의 권한체크, 인증체크 기능을 사용하기 위해 세션 생성
+            //-> 임시 세션으로, request와 response 완료시 끝
+            UsernamePasswordAuthenticationToken authenticationToken=new UsernamePasswordAuthenticationToken(loginReqDto.getUsername(), loginReqDto.getPassword());
+
+            Authentication authentication = authenticationManager.authenticate(authenticationToken);    //UserDetailsService의 LoadUserByUsername 호출
+            return authentication;
+
+        } catch (Exception e) {
+            //시큐리티 과정 중 예외이므로, authenticationEntryPoint에 걸린다.
+            // : Spring Security에서 인증에 실패한 경우 처리를 담당하는 인터페이스
+            //필터를 모두 통과한 후에 컨트롤러 단으로 들어가고, 그때 CustomExceptionHandler로 처리 가능하므로
+            //authenticationEntryPoint에 걸리도록 InternalAuthenticationServiceException 예외를 던짐
+            throw new InternalAuthenticationServiceException(e.getMessage());
+        }
+    }
+
+```
+8. 필터 메서드 (2) successfulAuthentication 메서드 : 로그인 성공시 응답 
+   1. 파라미터의 authResult에서 로그인 유저 객체 얻기
+   2. 얻은 로그인 유저로 토큰 생성 
+   3. 생성한 토큰을 헤더에 추가 
+   4. 로그인을 위한 응답 DTO 작성 후 loginUser를 이용해 loginRespDto 변환 
+   5. CustomResponseUtil에 JSON 응답 DTO 생성하는 메서드 작성 후 JSON 응답 DTO 반환
+```java
+    //return authentication 잘 작동하면 successfulAuthentication 메서드 호출
+    @Override
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+
+        //(1) 파라미터의 authResult에서 로그인 유저 객체 얻기
+        LoginUser loginUser = (LoginUser) authResult.getPrincipal();
+        //(2) 얻은 로그인 유저로 토큰 생성
+        String jwtToken = JwtProcess.create(loginUser);
+        //(3) 생성한 토큰을 헤더에 추가
+        response.addHeader(JwtVO.HEADER, jwtToken);
+        //로그인을 위한 응답 DTO 작성
+
+        //(4) loginUser를 이용해 loginRespDto 변환
+        LoginRespDto loginRespDto = new LoginRespDto(loginUser.getUser());
+
+        //CustomResponseUtil에 JSON 응답 DTO 생성하는 메서드 작성
+
+        //(5) JSON 응답 DTO 반환
+        CustomResponseUtil.success(response, loginRespDto);
+    }
+```
+9. 부모의 메서드로 로그인 주소 변경
+```java
+    public JwtAuthenticationFilter(AuthenticationManager authenticationManager) {
+        super(authenticationManager);
+        setFilterProcessesUrl("/api/login");
+        this.authenticationManager=authenticationManager;
+    }
+
+    //Post :/login시 동작하는 메서드
+    //-> Post :/api/login시 동작하는 메서드
+```
