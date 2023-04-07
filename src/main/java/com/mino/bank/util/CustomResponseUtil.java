@@ -51,4 +51,23 @@ public class CustomResponseUtil {
 
 
     }
+
+    public static void success(HttpServletResponse response, Object dto){
+        //파싱 오류가 날 경우 예외 처리
+        try{
+            //응답을 JSON으로 만들기
+            ObjectMapper objectMapper=new ObjectMapper();
+            ResponseDto<?> responseDto=new ResponseDto<>(1,  "로그인 완료", dto);
+            String responseBody = objectMapper.writeValueAsString(responseDto);
+
+            response.setContentType("application/json; charset=utf-8");
+            response.setStatus(200);
+            //response.getWriter().println("error");
+            response.getWriter().println(responseBody);
+            //공통적인 응답 DTO 작성 필요
+        }catch (Exception e){
+            log.error("서버 파싱 에러");
+
+        }
+    }
 }

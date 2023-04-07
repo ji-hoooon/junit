@@ -1,6 +1,7 @@
 package com.mino.bank.dto.user;
 
 import com.mino.bank.domain.user.User;
+import com.mino.bank.util.CustomDateUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -20,6 +21,22 @@ public class UserRespDto {
             this.id = user.getId();
             this.username = user.getUsername();
             this.fullname = user.getFullname();
+        }
+    }
+
+    @Getter
+    @Setter
+    public static class LoginRespDto{
+        private Long id;
+        private String username;
+        private String createdAt;
+
+        public LoginRespDto(User user) {
+            this.id = user.getId();
+            this.username = user.getUsername();
+            //String으로 응답하기 위해 LocalDateTime을 변환하는 유틸클래스 작성
+//            this.createdAt = user.getCreatedAt();
+            this.createdAt = CustomDateUtil.toStringFormat(user.getCreatedAt());
         }
     }
 }

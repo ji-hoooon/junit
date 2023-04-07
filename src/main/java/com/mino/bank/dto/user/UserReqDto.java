@@ -51,4 +51,11 @@ public class UserReqDto {
                     .build();
         }
     }
+
+    @Getter
+    @Setter
+    public static class LoginReqDto{
+        private String username;
+        private String password;
+    }
 }
