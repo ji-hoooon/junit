@@ -52,11 +52,19 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             return authentication;
 
         } catch (Exception e) {
-            //시큐리티 과정 중 예외이므로, authenticationEntryPoint에 걸린다.
-            // : Spring Security에서 인증에 실패한 경우 처리를 담당하는 인터페이스
+            e.printStackTrace();
             //필터를 모두 통과한 후에 컨트롤러 단으로 들어가고, 그때 CustomExceptionHandler로 처리 가능하므로
-            //authenticationEntryPoint에 걸리도록 InternalAuthenticationServiceException 예외를 던짐
+            //시큐리티가 가지고 있는 제어권을 가져오기 위해 예외를 던지고 예외처리 과정에서 unsuccessfulAuthentication 호출
             throw new InternalAuthenticationServiceException(e.getMessage());
+
+            //직접 unsuccessfulAuthentication이 실행되기가 어렵기 때문에 InternalAuthenticationServiceException 예외를 던진다.
+//            try {
+//                unsuccessfulAuthentication(request, response, new InternalAuthenticationServiceException(e.getMessage()));
+//            } catch (IOException ex) {
+//                throw new RuntimeException(ex);
+//            } catch (ServletException ex) {
+//                throw new RuntimeException(ex);
+//            }
         }
     }
 
@@ -80,5 +88,14 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         //(5) JSON 응답 DTO 반환
         CustomResponseUtil.success(response, loginRespDto);
+    }
+
+    //로그인 실패 로직
+    //시큐리티 과정 중 예외이므로, authenticationEntryPoint에 걸린다.
+    // : Spring Security에서 인증에 실패한 경우 처리를 담당하는 인터페이스
+    //시큐리티가 가지고 있는 제어권을 가져오기 위해 예외를 던짐
+    @Override
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
+        CustomResponseUtil.unAuthentication(response, "로그인 실패");
     }
 }

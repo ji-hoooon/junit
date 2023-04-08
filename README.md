@@ -354,7 +354,7 @@ public class UserServiceTest extends DummyObject {
 6. 필터 메서드 (1) attemptAuthentication 메서드: 로그인 인증 완료시 강제 로그인
    1. 로그인을 위한 DTO 작성 : UserReqDto의 내부클래스로 LoginReqDto (필터에서는 컨트롤러 전이므로 유효성 검사 불가능)
    2. 강제 로그인 : 토큰 방식의 인증을 사용하더라도 시큐리티의 권한체크, 인증체크 기능을 사용하기 위해 세션 생성 -> 임시 세션으로, request와 response 완료시 끝 
-   3. authenticationEntryPoint에 걸리도록 InternalAuthenticationServiceException 예외를 던짐
+   3. 로그인 실패시 : 시큐리티가 가지고 있는 제어권을 가져오기 위해 InternalAuthenticationServiceException 예외를 던짐
 ```java
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
