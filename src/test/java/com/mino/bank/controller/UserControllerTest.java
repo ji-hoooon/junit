@@ -13,10 +13,12 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Transactional
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = WebEnvironment.MOCK)
 
@@ -49,18 +51,25 @@ public class UserControllerTest extends DummyObject {
 //        resultActions.andExpect(status().isOk());   //200
     }
 
-    @BeforeEach
-    public void setUp(){
-        dataSetting();
-    }
 
     @Autowired
     UserRepository userRepository;
 
-    private void dataSetting() {
-        //DummyObject의 newUser()
+//    @BeforeEach
+//    public void setUp(){
+//        dataSetting();
+//    }
+//
+//    private void dataSetting() {
+//        //DummyObject의 newUser()
+//        userRepository.save(newUser("ssar", "pepe ssar"));
+//    }
+//
+    @BeforeEach
+    public void setUp(){
         userRepository.save(newUser("ssar", "pepe ssar"));
     }
+
 
     @Test
     //통합테스트이므로, 서비스단에서 중복체크에서 예외가 발생하는 경우 테스트
