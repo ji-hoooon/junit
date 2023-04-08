@@ -18,6 +18,6 @@ spring:
       hibernate:
         default_batch_fetch_size: 100
 
-  logging:
-    level:
-      '[com.mino.bank]':INFO
+logging:
+  level:
+    '[com.mino.bank]': INFO

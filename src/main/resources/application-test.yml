@@ -23,7 +23,7 @@ spring:
     ansi:
       enabled: always
 
-  logging:
-    level:
-      '[com.mino.bank]':DEBUG
-      '[org.hibernate.type]':trace
+logging:
+  level:
+    '[com.mino.bank]': DEBUG
+    '[org.hibernate.type]': TRACE
