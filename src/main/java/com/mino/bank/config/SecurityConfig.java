@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -61,7 +62,7 @@ public class SecurityConfig {
         http.apply(new CustomSecurityFilterManager());
 
 
-        //응답의 일관성을 만들기 위해 Exception 가로채기
+        //응답의 일관성을 만들기 위해 인증 실패 Exception 가로채기
         http.exceptionHandling().authenticationEntryPoint(
 
                 (request, response, authenticationException) ->{
@@ -70,7 +71,8 @@ public class SecurityConfig {
                     if(uri.contains("admin")){
                         CustomResponseUtil.unAuthorization(response, "관리자만 접근이 가능합니다.");
                     }else{
-                        CustomResponseUtil.unAuthentication(response, "로그인이 필요합니다.");
+//                        CustomResponseUtil.unAuthentication(response, "로그인이 필요합니다.");
+                        CustomResponseUtil.fail(response, "로그인이 필요합니다.", HttpStatus.UNAUTHORIZED);
                     }
 
                 }
@@ -79,6 +81,17 @@ public class SecurityConfig {
         // ExceptionTranslationFilter로 필터링 되는 AuthenticationEntryPoint 객체
         //: AuthenticationEntryPoint의 commence 메서드는 파라미터로 request, response, AuthenticationException
 
+        //응답의 일관성을 만들기 위해 권한 실패 Exception 가로채기
+        http.exceptionHandling().accessDeniedHandler(
+
+        //	void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException)
+        //	구현 필요
+                (request, response, e) -> {
+                    String uri = request.getRequestURI();
+                    log.debug("디버그 : " + uri);
+                    CustomResponseUtil.fail(response, "권한이 없습니다", HttpStatus.FORBIDDEN);
+                }
+        );
 
         //접근 권한 설정
         http.authorizeRequests()

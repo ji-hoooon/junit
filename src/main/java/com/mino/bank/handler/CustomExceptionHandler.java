@@ -2,6 +2,7 @@ package com.mino.bank.handler;
 
 import com.mino.bank.dto.ResponseDto;
 import com.mino.bank.handler.ex.CustomApiException;
+import com.mino.bank.handler.ex.CustomForbiddenException;
 import com.mino.bank.handler.ex.CustomValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,5 +27,11 @@ public class CustomExceptionHandler {
 
         log.error(e.getMessage());
         return new ResponseEntity<>(new ResponseDto<>(-1, e.getMessage(), e.getErroMap()), HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(CustomForbiddenException.class)
+    public ResponseEntity<?> forbiddenException(CustomForbiddenException e){
+
+        log.error(e.getMessage());
+        return new ResponseEntity<>(new ResponseDto<>(-1, e.getMessage(), null), HttpStatus.FORBIDDEN);
     }
 }
