@@ -2,17 +2,15 @@ package com.mino.bank.service;
 
 import com.mino.bank.domain.Account;
 import com.mino.bank.domain.User;
+import com.mino.bank.dto.account.AccountReqDto.AccountSaveReqDto;
+import com.mino.bank.dto.account.AccountRespDto.AccountSaveRespDto;
 import com.mino.bank.handler.ex.CustomApiException;
 import com.mino.bank.repository.AccountRepository;
 import com.mino.bank.repository.UserRepository;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.NotNull;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -54,47 +52,4 @@ public class AccountService {
         return new AccountSaveRespDto(accountPS);
     }
 
-    //요청을 위한 임시 DTO 작성
-    //: 계좌등록을 위한 요청 DTO
-    @Getter
-    @Setter
-    public static class AccountSaveReqDto{
-        @NotNull
-//        @Size : 문자열의 길이 체크
-        @Digits(integer = 4, fraction = 4)   //: 숫자의 길이 체크 최소4자 최대4자
-        private Long number;
-        @Digits(integer = 4, fraction = 4)   //: 숫자의 길이 체크 최소4자 최대4자
-        private Long password;
-//        private User user;
-        //: 세션에 있는걸로 검증할 것이므로
-
-        //User를 받아서 엔티티로 변환하는 메서드
-        public Account toEntity(User user){
-            return Account.builder()
-                    .number(number)
-                    .password(password)
-                    .balance(1000L)
-                    .user(user)
-                    .build();
-        }
-
-    }
-
-    //응답을 위한 임시 DTO 작성
-    //: 계좌등록을 위한 응답 DTO
-
-    @Getter
-    @Setter
-    public static class AccountSaveRespDto{
-        private Long id;
-        private Long number;
-        private Long balance;
-        //컨트롤러에 항상 엔티티가 아닌 DTO를 전달하기 위한 생성자
-
-        public AccountSaveRespDto(Account account) {
-            this.id = account.getId();
-            this.number = account.getNumber();
-            this.balance = account.getBalance();
-        }
-    }
 }
