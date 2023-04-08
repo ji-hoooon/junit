@@ -5,17 +5,21 @@ import com.mino.bank.dto.ResponseDto;
 import com.mino.bank.dto.account.AccountReqDto;
 import com.mino.bank.dto.account.AccountRespDto.AccountSaveRespDto;
 import com.mino.bank.service.AccountService;
+import com.mino.bank.service.AccountService.AccountListRespDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.OK;
 
 @RequiredArgsConstructor
 @RequestMapping("/api")
@@ -26,7 +30,35 @@ public class AccountController {
     @PostMapping("/s/account")
     public ResponseEntity<?> saveAccount(@RequestBody @Valid AccountReqDto.AccountSaveReqDto accountSaveReqDto, BindingResult bindingResult, @AuthenticationPrincipal LoginUser loginUser){
         AccountSaveRespDto accountSaveRespDto = accountService.계좌등록(accountSaveReqDto, loginUser.getUser().getId());
-        return new ResponseEntity<>(new ResponseDto<>(1,"계좌 등록 완료", accountSaveRespDto),HttpStatus.CREATED);
+        return new ResponseEntity<>(new ResponseDto<>(1,"계좌 등록 완료", accountSaveRespDto), CREATED);
+    }
+
+    //리소스 요소 URI 패턴
+    //: 단수명사를 사용하며 컬랙션의 개별요소를 나타낸다.
+    //-> 해당 리소스 요소를 반환한다.
+//    @GetMapping("/s/account/{id}")
+//    //인증 필요, account 테이블에 1번 row 반환 요청
+//    //-> 해당 유저 ID의 정보만 조회 가능하도록 권한 체크 절차 필요
+//    public ResponseEntity<?> findUserAccount(@PathVariable Long id, @AuthenticationPrincipal LoginUser loginUser){
+//        //권한 체크
+//        if(id!=loginUser.getUser().getId()){
+//            throw new CustomForbiddenException("권한이 없습니다.");
+//        }
+//        //(1) 서비스 호출
+//        AccountListRespDto accountListRespDto = accountService.계좌목록보기_유저별(id);
+//        //(2) 응답DTO 반환
+//        return new ResponseEntity<>(new ResponseDto<>(1,"계좌목록 보기_유저별 성공", accountListRespDto), OK);
+//    }
+    //: 로그인한 유저인데 꼭 권한 체크를 컨트롤러에서 해야하나? -> id를 받지말고 로그인한 유저의 정보만 출력할 수 없을까
+
+
+    //인증이 필요하고, account 테이블에 login한 유저의 계좌 목록만 요청
+    @GetMapping("/s/account/login-user")
+    public ResponseEntity<?> findUserAccount(@AuthenticationPrincipal LoginUser loginUser){
+        //(1) 서비스 호출
+        AccountListRespDto accountListRespDto = accountService.계좌목록보기_유저별(loginUser.getUser().getId());
+        //(2) 응답DTO 반환
+        return new ResponseEntity<>(new ResponseDto<>(1,"계좌목록 보기_유저별 성공", accountListRespDto), OK);
     }
 }
 
