@@ -1,6 +1,7 @@
 package com.mino.bank.config;
 
 import com.mino.bank.config.jwt.JwtAuthenticationFilter;
+import com.mino.bank.config.jwt.JwtAuthorizationFilter;
 import com.mino.bank.domain.user.UserEnum;
 import com.mino.bank.util.CustomResponseUtil;
 import org.slf4j.Logger;
@@ -111,6 +112,7 @@ public class SecurityConfig {
         public void configure(HttpSecurity builder) throws Exception {
             AuthenticationManager authenticationManager=builder.getSharedObject(AuthenticationManager.class);
             builder.addFilter(new JwtAuthenticationFilter(authenticationManager));
+            builder.addFilter(new JwtAuthorizationFilter(authenticationManager));
             super.configure(builder);
         }
     }

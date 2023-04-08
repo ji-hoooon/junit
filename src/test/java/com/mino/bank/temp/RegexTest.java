@@ -105,8 +105,8 @@ public class RegexTest {
     //영문,숫자, 2~20자이내
     public void user_username_test() throws Exception{
         //given
-        String username = "ssar";
-        boolean result = Pattern.matches("^[A-Za-z]{2,20}$", username);
+        String username = "ssar123";
+        boolean result = Pattern.matches("^[A-Za-z0-9]{2,20}$", username);
 
         System.out.println("테스트 : "+result);
     }

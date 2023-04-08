@@ -20,7 +20,7 @@ public class JwtProcess {
                 .withSubject("bank")
                 .withExpiresAt(new Date(System.currentTimeMillis()+JwtVO.EXPIRATION_TIME))
                 .withClaim("id", loginUser.getUser().getId())
-                .withClaim("id", loginUser.getUser().getRole().name())  //getRole() -> UserEnum 타입이므로
+                .withClaim("role", loginUser.getUser().getRole().name())  //getRole() -> UserEnum 타입이므로
 //                .withClaim("id", loginUser.getUser().getRole()+"")  //getRole() -> UserEnum 타입이므로
                 .sign(Algorithm.HMAC512(JwtVO.SECRET));
         return JwtVO.TOKEN_PREFIX+jwtToken;
