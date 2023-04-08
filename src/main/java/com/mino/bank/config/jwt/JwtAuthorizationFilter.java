@@ -21,6 +21,8 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         super(authenticationManager);
     }
 
+    //JWT 헤더를 추가하지 않아도 필터 통과 가능
+    //: 하지만 시큐리티 단에서 세션 값 검증에 실패한다.
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         if(isHeaderVerify(request, response)){
@@ -38,8 +40,8 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         // 다음 필터 수행
+        // : 즉, 토큰이 없어도 다음 필터를 수행한다.
         chain.doFilter(request,response);
-
     }
 
     //헤더에 JWT 있는지 체크하는 검증 메서드
