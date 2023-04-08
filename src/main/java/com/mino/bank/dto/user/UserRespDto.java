@@ -1,6 +1,6 @@
 package com.mino.bank.dto.user;
 
-import com.mino.bank.domain.user.User;
+import com.mino.bank.domain.User;
 import com.mino.bank.util.CustomDateUtil;
 import lombok.Getter;
 import lombok.Setter;

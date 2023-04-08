@@ -1,6 +1,5 @@
-package com.mino.bank.domain.transaction;
+package com.mino.bank.domain;
 
-import com.mino.bank.domain.account.Account;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

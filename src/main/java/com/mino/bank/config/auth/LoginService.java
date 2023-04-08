@@ -1,7 +1,7 @@
 package com.mino.bank.config.auth;
 
-import com.mino.bank.domain.user.User;
-import com.mino.bank.domain.user.UserRepository;
+import com.mino.bank.domain.User;
+import com.mino.bank.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.userdetails.UserDetails;

@@ -1,6 +1,6 @@
 package com.mino.bank.config.auth;
 
-import com.mino.bank.domain.user.User;
+import com.mino.bank.domain.User;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;

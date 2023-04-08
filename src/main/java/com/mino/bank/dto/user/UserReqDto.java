@@ -1,7 +1,7 @@
 package com.mino.bank.dto.user;
 
-import com.mino.bank.domain.user.User;
-import com.mino.bank.domain.user.UserEnum;
+import com.mino.bank.domain.User;
+import com.mino.bank.domain.UserEnum;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

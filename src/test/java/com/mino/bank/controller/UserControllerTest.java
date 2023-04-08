@@ -2,7 +2,7 @@ package com.mino.bank.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mino.bank.config.dummy.DummyObject;
-import com.mino.bank.domain.user.UserRepository;
+import com.mino.bank.repository.UserRepository;
 import com.mino.bank.dto.user.UserReqDto.JoinReqDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

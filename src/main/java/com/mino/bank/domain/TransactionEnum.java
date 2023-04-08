@@ -1,4 +1,4 @@
-package com.mino.bank.domain.transaction;
+package com.mino.bank.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

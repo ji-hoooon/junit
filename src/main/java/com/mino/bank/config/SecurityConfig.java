@@ -2,7 +2,7 @@ package com.mino.bank.config;
 
 import com.mino.bank.config.jwt.JwtAuthenticationFilter;
 import com.mino.bank.config.jwt.JwtAuthorizationFilter;
-import com.mino.bank.domain.user.UserEnum;
+import com.mino.bank.domain.UserEnum;
 import com.mino.bank.util.CustomResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

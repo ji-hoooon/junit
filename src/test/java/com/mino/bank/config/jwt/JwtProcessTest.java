@@ -1,8 +1,8 @@
 package com.mino.bank.config.jwt;
 
 import com.mino.bank.config.auth.LoginUser;
-import com.mino.bank.domain.user.User;
-import com.mino.bank.domain.user.UserEnum;
+import com.mino.bank.domain.User;
+import com.mino.bank.domain.UserEnum;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 

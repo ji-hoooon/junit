@@ -1,4 +1,4 @@
-package com.mino.bank.domain.user;
+package com.mino.bank.domain;
 
 import lombok.Builder;
 import lombok.Getter;

@@ -1,5 +1,6 @@
-package com.mino.bank.domain.user;
+package com.mino.bank.repository;
 
+import com.mino.bank.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

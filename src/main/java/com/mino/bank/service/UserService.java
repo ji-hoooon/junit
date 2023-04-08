@@ -1,7 +1,7 @@
 package com.mino.bank.service;
 
-import com.mino.bank.domain.user.User;
-import com.mino.bank.domain.user.UserRepository;
+import com.mino.bank.domain.User;
+import com.mino.bank.repository.UserRepository;
 import com.mino.bank.dto.user.UserReqDto.JoinReqDto;
 import com.mino.bank.dto.user.UserRespDto.JoinRespDto;
 import com.mino.bank.handler.ex.CustomApiException;

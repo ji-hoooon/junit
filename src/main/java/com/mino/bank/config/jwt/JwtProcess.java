@@ -4,8 +4,8 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.mino.bank.config.auth.LoginUser;
-import com.mino.bank.domain.user.User;
-import com.mino.bank.domain.user.UserEnum;
+import com.mino.bank.domain.User;
+import com.mino.bank.domain.UserEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
