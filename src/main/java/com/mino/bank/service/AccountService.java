@@ -3,6 +3,7 @@ package com.mino.bank.service;
 import com.mino.bank.domain.Account;
 import com.mino.bank.domain.User;
 import com.mino.bank.dto.account.AccountReqDto.AccountSaveReqDto;
+import com.mino.bank.dto.account.AccountRespDto.AccountDto;
 import com.mino.bank.dto.account.AccountRespDto.AccountSaveRespDto;
 import com.mino.bank.handler.ex.CustomApiException;
 import com.mino.bank.repository.AccountRepository;
@@ -27,7 +28,7 @@ public class AccountService {
 
     //DB의 변경에 요구되므로, 커밋이 진행된다.
     @Transactional
-    public AccountSaveRespDto 계좌등록(AccountSaveReqDto accountSaveReqDto, Long userId){
+    public AccountSaveRespDto 계좌등록(AccountSaveReqDto accountSaveReqDto, Long userId) {
 
 
         //(1) User 로그인 되어있는지 컨트롤러에서 체크하고 userId만 받는다.
@@ -35,14 +36,14 @@ public class AccountService {
 //        User user=userRepository.findById(userId);
         //(2) 유저 엔티티를 이용해 DB에서 조회한다.
         //Optional 객체이므로,
-        User user=userRepository.findById(userId).orElseThrow(
+        User user = userRepository.findById(userId).orElseThrow(
                 //예외 발생시 (DB에 해당하는 유저가 없으면)
-                ()->new CustomApiException("유저를 찾을 수 없습니다.")
+                () -> new CustomApiException("유저를 찾을 수 없습니다.")
         );
         //(3) 해당 계좌가 DB에 있는지 중복여부를 체크한다.
         //:findByNumber를 만들어서 해당 계좌번호가 존재하는지 체크
         Optional<Account> accountOP = accountRepository.findByNumber(accountSaveReqDto.getNumber());
-        if(accountOP.isPresent()){
+        if (accountOP.isPresent()) {
             //계좌 중복으로 인한 예외 던짐
             throw new CustomApiException("해당 계좌가 이미 존재합니다.");
         }
@@ -57,7 +58,7 @@ public class AccountService {
         return new AccountSaveRespDto(accountPS);
     }
 
-    public AccountListRespDto 계좌목록보기_유저별(Long userId){
+    public AccountListRespDto 계좌목록보기_유저별(Long userId) {
         //(1) userId로 DB에서 유저 조회
         User userPS = userRepository.findById(userId).orElseThrow(
                 () -> new CustomApiException("유저를 찾을 수 없습니다.")
@@ -71,9 +72,9 @@ public class AccountService {
 
     @Getter
     @Setter
-    public static class AccountListRespDto{
+    public static class AccountListRespDto {
         private String fullname;
-        private List<AccountDto> accounts= new ArrayList<>();
+        private List<AccountDto> accounts = new ArrayList<>();
 
         //여러 계좌마다 가지고 있는 User 객체를 각각 조회하면, 매우 많은 리소스 낭비
         //: Account가 가지고 있는 User 객체는 LAZY 로딩하지 않는다.
@@ -106,23 +107,5 @@ public class AccountService {
         }
 
 
-        //서비스에서 반드시 컨트롤러한테 엔티티가 아닌 DTO로 변환해서 응답해야 한다.
-        //컨트롤러로 응답할 내용 : id, number, balance
-        @Getter
-        @Setter
-        public class AccountDto{
-            private Long id;
-            private Long number;
-            private Long balance;
-
-            //생성자로 Account를 받아서 DTO로 변환
-            public AccountDto(Account account) {
-                this.id = account.getId();
-                this.number = account.getNumber();
-                this.balance = account.getBalance();
-            }
-        }
     }
-
-
 }
