@@ -1,5 +1,6 @@
 package com.mino.bank.service;
 
+import com.mino.bank.config.auth.LoginUser;
 import com.mino.bank.domain.Account;
 import com.mino.bank.domain.Transaction;
 import com.mino.bank.domain.TransactionEnum;
@@ -13,12 +14,18 @@ import com.mino.bank.handler.ex.CustomApiException;
 import com.mino.bank.repository.AccountRepository;
 import com.mino.bank.repository.TransactionRepository;
 import com.mino.bank.repository.UserRepository;
+import com.mino.bank.util.CustomDateUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -173,5 +180,119 @@ public class AccountService {
         return new AccountDepositRespDto(depositAccountPS, transactionPS);
     }
 
+    @Transactional
+    //인증 체크가 필요한 출금에 필요한 정보를 위한 요청 DTO 필요: AccountWithDrawReqDto
+    //(1) 0원 체크
+    //(2) 출금 계좌 확인
+    //(3) 출금계좌의 소유자 확인 (로그인한 유저와 동일한지 확인)
+    //(4) 출금계좌 비밀번호 확인
+    //(5) 출금계좌 잔액 확인
+    //(6) 출금하기
+    //(7) 거래내역 남기기
+    //(8) 출금 결과를 응답하기 위한 DTO 작성
+
+    public AccountWithdrawRespDto 계좌출금(AccountWithdrawReqDto accountWithdrawReqDto, @AuthenticationPrincipal LoginUser loginUser){
+        //(1) 0원 체크
+        if(accountWithdrawReqDto.getAmount()<=0L){
+            throw new CustomApiException("0원 이하의 금액을 입금할 수 없습니다.");
+        }
+        //(2) 출금 계좌 확인
+        Account withdrawAccountPS = accountRepository.findByNumber(accountWithdrawReqDto.getNumber()).orElseThrow(
+                () -> new CustomApiException("계좌를 찾을 수 없습니다.")
+        );
+        //(3) 출금계좌의 소유자 확인 (로그인한 유저와 동일한지 확인)
+        //: 동일한 유저인지 확인해야하는데, Account 객체에서 확인-checkOwner
+        withdrawAccountPS.checkOwner(loginUser.getUser().getId());
+
+        //(4) 출금계좌 비밀번호 확인
+        //: Account 객체에 checkSamePassword 메서드 작성
+        withdrawAccountPS.checkSamePassword(accountWithdrawReqDto.getPassword());
+
+        //(5) 출금계좌 잔액 확인
+        //: 출금하려는 금액보다 잔액이 많아야하므로, Account 객체에 checkBalance 메서드 필요
+//        withdrawAccountPS.checkBalance(accountWithdrawReqDto.getAmount());
+        //: 안전하지 않은 코드로, 출금하기시 잔액확인하도록 리팩토링
+
+        //(6) 출금하기
+        //: Account 객체에 withdraw 메서드 작성
+        withdrawAccountPS.withdraw(accountWithdrawReqDto.getAmount());
+
+        //(7) 거래내역 남기기
+        Transaction transaction = Transaction.builder()
+                .withdrawAccount(withdrawAccountPS)
+                .withdrawAccountBalance(withdrawAccountPS.getBalance())
+
+                .depositAccount(null)   //출금이므로 입금계좌 없음
+                .depositAccountBalance(null)   //출금이므로 입금 후 잔액 없음
+
+                .amount(accountWithdrawReqDto.getAmount())   //입금할 금액을 추가
+                .gubun(TransactionEnum.DEPOSIT) //열거형을 이용해 구분값 설정
+                .sender(accountWithdrawReqDto.getNumber()+"")
+                .receiver("ATM")  //출금이므로 받는 사람은 ATM
+                .build();
+
+        Transaction transactionPS = transactionRepository.save(transaction);
+
+        //(8) 출금 결과를 응답하기 위한 DTO 작성 (DTO 검증은 컨트롤러에서 진행)
+        //: AccountWithdrawReqDto
+        return new AccountWithdrawRespDto(withdrawAccountPS,transactionPS);
+    }
+
+    @Getter
+    @Setter
+    public static class AccountWithdrawReqDto{
+        @NotNull
+//        @Size : 문자열의 길이 체크
+        @Digits(integer = 4, fraction = 4)   //: 숫자의 길이 체크 최소4자 최대4자
+        private Long number;
+        @Digits(integer = 4, fraction = 4)   //: 숫자의 길이 체크 최소4자 최대4자
+        private Long password;
+        @NotNull
+        private Long amount;
+        @NotEmpty
+        @Pattern(regexp = "^(WITHDRAW)$")
+        private String gubun;
+    }
+
+    //DTO가 똑같다고 해도 재사용하지 않아야 한다.
+    //: 변경에 유연하도록 독립적으로 작성한다.
+    @Getter
+    @Setter
+    public static class AccountWithdrawRespDto{
+        private Long id;
+        private Long number;
+
+        private Long balance;
+        private AccountWithdrawRespDto.TransactionDto transaction;
+
+        public AccountWithdrawRespDto(Account account, Transaction transaction) {
+            this.id = account.getId();
+            this.number = account.getNumber();
+            this.balance=account.getBalance();
+            this.transaction = new AccountWithdrawRespDto.TransactionDto(transaction);
+        }
+
+        @Getter
+        @Setter
+        public class TransactionDto{
+            //트랜잭션 히스토리
+
+            private Long id;
+            private String gubun;
+            private String sender;
+            private String receiver;
+            private Long amount;
+            private String createdAt;
+
+            public TransactionDto(Transaction transaction) {
+                this.id = transaction.getId();
+                this.gubun = transaction.getGubun().getValue();
+                this.sender = transaction.getSender();
+                this.receiver = transaction.getReceiver();
+                this.amount = transaction.getAmount();
+                this.createdAt = CustomDateUtil.toStringFormat(transaction.getCreatedAt());
+            }
+        }
+    }
 
 }

@@ -70,7 +70,38 @@ public class Account {
         }
     }
 
+    //계좌 무통장 입금 메서드
     public void deposit(Long amount) {
         balance+=amount;
+    }
+
+    //계좌 출금을 위해 필요한 3개의 메서드
+    public void checkSamePassword(Long password) {
+//        if(this.password!=password){
+        //Long타입 비교하기 위해서는 .longValue()로 비교
+        if(this.password.longValue()!=password.longValue()){
+            throw new CustomApiException("계좌 비밀번호 검증에 실패했습니다.");
+        }
+    }
+
+//    public void checkBalance(Long amount) {
+//        if(this.balance<amount){
+//            throw new CustomApiException("계좌 잔액이 부족합니다.");
+//        }
+//    }
+//
+//    public void withdraw(Long amount) {
+//        balance-=amount;
+//    }
+    //: 안전하지 않은 코드 -> 리팩토링
+    public void checkBalance(Long amount) {
+        if(this.balance<amount){
+            throw new CustomApiException("계좌 잔액이 부족합니다.");
+        }
+    }
+
+    public void withdraw(Long amount) {
+        checkBalance(amount);
+        balance-=amount;
     }
 }

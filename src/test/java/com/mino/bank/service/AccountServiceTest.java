@@ -13,7 +13,6 @@ import com.mino.bank.handler.ex.CustomApiException;
 import com.mino.bank.repository.AccountRepository;
 import com.mino.bank.repository.TransactionRepository;
 import com.mino.bank.repository.UserRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -208,6 +207,51 @@ class AccountServiceTest extends DummyObject {
         account.deposit(100L);
 
         //then
-        Assertions.assertThat(account.getBalance()).isEqualTo(1100L);
+        assertThat(account.getBalance()).isEqualTo(1100L);
+    }
+
+
+    /**
+     * 계좌출금 서비스 테스트
+     *  //(1) 테스트에 필요한 변수
+     *  //(2) 유저와 계좌 객체 생성
+     *  //(3) 0원 체크
+     *  //(4) 출금 소유자 확인
+     *  //(5) 잔액 확인
+     *  //(6) 출금하기
+     * @throws Exception
+     */
+    @Test
+    public void 계좌출금_test() throws Exception{
+        //given
+        //(1) 테스트에 필요한 변수
+        Long amount=100L;
+        Long password=1234L;
+        Long userId=1L;
+
+        //(2) 유저와 계좌 객체 생성
+        User ssar = newMockUser(userId, "ssar", "pepe ssar");   //실행 됨
+        Account ssarAccount = newMockAccount(1L, 1111L, 1000L, ssar);  //실행 됨
+
+        //when
+        //(3) 0원 체크
+        if(amount<=0L){
+            throw new CustomApiException("0원 이하의 금액을 입금할 수 없습니다.");
+        }
+
+        //(4) 출금 소유자 확인
+        ssarAccount.checkOwner(userId);
+        //Long 타입의 값 비교는 .longValue()
+        ssarAccount.checkSamePassword(password);
+
+        //(5) 잔액 확인
+//        ssarAccount.checkBalance(amount);
+        //(6) 출금하기
+        ssarAccount.withdraw(amount);
+        //: 출금하기 메서드 실행 전, 잔액 확인 메서드가 실행되지 않을 수도 있다. -> 안전하지 않은 코드
+        //: 잔액 확인 + 출금하기로 메서드 리팩토링
+
+        //then
+        assertThat(ssarAccount.getBalance()).isEqualTo(900L);
     }
 }
