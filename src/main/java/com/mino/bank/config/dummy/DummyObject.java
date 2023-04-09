@@ -1,6 +1,8 @@
 package com.mino.bank.config.dummy;
 
 import com.mino.bank.domain.Account;
+import com.mino.bank.domain.Transaction;
+import com.mino.bank.domain.TransactionEnum;
 import com.mino.bank.domain.User;
 import com.mino.bank.domain.UserEnum;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -8,6 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.time.LocalDateTime;
 
 public class DummyObject {
+    //모두 스태틱 메서드
     protected User newUser(String username, String fullname){
         BCryptPasswordEncoder passwordEncoder= new BCryptPasswordEncoder();
         String encPassword = passwordEncoder.encode("1234");
@@ -20,7 +23,7 @@ public class DummyObject {
                 .role(UserEnum.CUSTOMER)
                 .build();
     }
-    protected User newMockUser(Long id,String username, String fullname){
+    protected static User newMockUser(Long id,String username, String fullname){
         BCryptPasswordEncoder passwordEncoder= new BCryptPasswordEncoder();
         String encPassword = passwordEncoder.encode("1234");
         return User.builder()
@@ -34,7 +37,7 @@ public class DummyObject {
                 .build();
     }
 
-    protected Account newAccount(Long number, User user){
+    protected static Account newAccount(Long number, User user){
         return Account.builder()
                 .number(number)
                 .user(user)
@@ -43,7 +46,7 @@ public class DummyObject {
                 .build();
     }
 
-    protected Account newMockAccount(Long id,Long number, Long balance,User user) {
+    protected static Account newMockAccount(Long id,Long number, Long balance,User user) {
         return Account.builder()
                 .id(id)
                 .number(number)
@@ -53,5 +56,56 @@ public class DummyObject {
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
+    }
+
+    //계좌 1111L 1000원
+    //입금 트랜잭션 -> 계좌를 받아와서 1100원으로 변경 -> 입금 트랜잭션 히스토리 생성
+    protected static Transaction newDepositTransaction(Account account){
+        //(1) 테스트를 위해서 계좌를 받아와서 입금 수행
+        account.deposit(100L);
+        //(2) 트랜잭션 히스토리 생성
+        Transaction transaction = Transaction.builder()
+                .depositAccount(account)
+                .depositAccountBalance(account.getBalance())   //입금된 금액을 추가
+
+                .withdrawAccount(null)  //무통장입금이므로 이체일때만 존재
+                .withdrawAccountBalance(null)   //무통장입금이므로 이체일때만 존재
+
+                .amount(100L)   //입금할 금액을 추가
+                .gubun(TransactionEnum.DEPOSIT) //열거형을 이용해 구분값 설정
+                .sender("ATM")  //sender 값을 보고 나중에 ATM 문자열을 보고 출금 정보가 없는 것을 알 수도 있다.
+
+                .receiver(account.getNumber() + "")  //받는 사람 (계좌번호)
+                .tel("01099997777")
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+        return transaction;
+    }
+
+    //계좌 1111L 1000원
+    //입금 트랜잭션 -> 계좌를 받아와서 1100원으로 변경 -> 입금 트랜잭션 히스토리 생성
+    protected static Transaction newMockDepositTransaction(Long id, Account account){
+        //(1) 테스트를 위해서 계좌를 받아와서 입금 수행
+        account.deposit(100L);
+        //(2) 트랜잭션 히스토리 생성
+        Transaction transaction = Transaction.builder()
+                .id(id)
+                .depositAccount(account)
+                .depositAccountBalance(account.getBalance())   //입금된 금액을 추가
+
+                .withdrawAccount(null)  //무통장입금이므로 이체일때만 존재
+                .withdrawAccountBalance(null)   //무통장입금이므로 이체일때만 존재
+
+                .amount(100L)   //입금할 금액을 추가
+                .gubun(TransactionEnum.DEPOSIT) //열거형을 이용해 구분값 설정
+                .sender("ATM")  //sender 값을 보고 나중에 ATM 문자열을 보고 출금 정보가 없는 것을 알 수도 있다.
+
+                .receiver(account.getNumber() + "")  //받는 사람 (계좌번호)
+                .tel("01099997777")
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+        return transaction;
     }
 }

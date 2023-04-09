@@ -76,6 +76,7 @@ public class AccountController {
     //인증이 필요없는 무통장입금메서드
     @PostMapping("/account/deposit")
     public ResponseEntity<?> depositAccount(@RequestBody @Valid AccountDepositReqDto accountDepositReqDto, BindingResult bindingResult){
+        //BindingResult가 있어야 예외를 잡는다.
         AccountDepositRespDto accountDepositRespDto = accountService.계좌입금(accountDepositReqDto);
         return new ResponseEntity<>(new ResponseDto<>(1,"계좌 입금 완료", accountDepositRespDto), CREATED);
     }

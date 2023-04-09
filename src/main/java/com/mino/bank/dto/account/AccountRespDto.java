@@ -65,12 +65,13 @@ public class AccountRespDto {
             private String sender;
             private String receiver;
             private Long amount;
+            private String tel;
+            private String createdAt;
+
             @JsonIgnore
             //: JSON 데이터로 변환할때에는 무시되는 변수
             private Long depositAccountBalance;
             //: 테스트를 위한 변수로 클라이언트에게 전달시에는 제외해야한다.
-            private String tel;
-            private String createdAt;
 
             public TransactionDto(Transaction transaction) {
                 this.id = transaction.getId();
