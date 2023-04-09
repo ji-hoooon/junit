@@ -55,4 +55,46 @@ public class AccountReqDto {
 
         //: 정규표현식 테스트 필요
     }
+
+    @Getter
+    @Setter
+    public static class AccountWithdrawReqDto{
+        @NotNull
+//        @Size : 문자열의 길이 체크
+        @Digits(integer = 4, fraction = 4)   //: 숫자의 길이 체크 최소4자 최대4자
+        private Long number;
+        @Digits(integer = 4, fraction = 4)   //: 숫자의 길이 체크 최소4자 최대4자
+        private Long password;
+        @NotNull
+        private Long amount;
+        @NotEmpty
+        @Pattern(regexp = "^(WITHDRAW)$")
+        private String gubun;
+    }
+
+
+    //계좌 이체를 위해서는 출금계좌, 입금계좌 필요
+    //: 출금계좌의 비밀번호 필요
+    @Getter
+    @Setter
+    public static class AccountTransferReqDto{
+        @NotNull
+//        @Size : 문자열의 길이 체크
+        @Digits(integer = 4, fraction = 4)   //: 숫자의 길이 체크 최소4자 최대4자
+        private Long withdrawNumber;
+        @NotNull
+//        @Size : 문자열의 길이 체크
+        @Digits(integer = 4, fraction = 4)   //: 숫자의 길이 체크 최소4자 최대4자
+        private Long depositNumber;
+
+        @Digits(integer = 4, fraction = 4)   //: 숫자의 길이 체크 최소4자 최대4자
+        private Long withdrawPassword;
+        @NotNull
+        private Long amount;
+        @NotEmpty
+        @Pattern(regexp = "^(TRANSFER)$")
+        private String gubun;
+    }
+
+
 }
