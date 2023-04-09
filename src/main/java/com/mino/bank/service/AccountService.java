@@ -1,28 +1,24 @@
 package com.mino.bank.service;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mino.bank.domain.Account;
 import com.mino.bank.domain.Transaction;
 import com.mino.bank.domain.TransactionEnum;
 import com.mino.bank.domain.User;
+import com.mino.bank.dto.account.AccountReqDto.AccountDepositReqDto;
 import com.mino.bank.dto.account.AccountReqDto.AccountSaveReqDto;
+import com.mino.bank.dto.account.AccountRespDto.AccountDepositRespDto;
 import com.mino.bank.dto.account.AccountRespDto.AccountDto;
 import com.mino.bank.dto.account.AccountRespDto.AccountSaveRespDto;
 import com.mino.bank.handler.ex.CustomApiException;
 import com.mino.bank.repository.AccountRepository;
 import com.mino.bank.repository.TransactionRepository;
 import com.mino.bank.repository.UserRepository;
-import com.mino.bank.util.CustomDateUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -176,67 +172,4 @@ public class AccountService {
     }
 
 
-
-    @Getter
-    @Setter
-    public static class AccountDepositReqDto{
-        @NotNull
-        @Digits(integer =4, fraction = 4)
-        private Long number;
-        @NotNull
-        //0원 체크도 가능하긴 하지만 -> 서비스에서 체크
-        private Long amount;
-        @NotEmpty
-        @Pattern(regexp = "^(DEPOSIT)$")
-        private String gubun;   //DEPOSIT
-        @NotEmpty
-//        @Pattern(regexp = "^[0-9]{3}-[0-9]{4}[0-9]{4}")
-        @Pattern(regexp = "^[0-9]{11}")
-        private String tel; //입금이 잘못 되었을 때를 대비해 필요한 입금자 연락처
-
-        //: 정규표현식 테스트 필요
-    }
-
-    @Getter
-    @Setter
-    public static class AccountDepositRespDto{
-        private Long id;
-        private Long number;
-        private TransactionDto transaction;
-
-        public AccountDepositRespDto(Account account, Transaction transaction) {
-            this.id = account.getId();
-            this.number = account.getNumber();
-            this.transaction = new TransactionDto(transaction);
-        }
-
-        @Getter
-        @Setter
-        public class TransactionDto{
-            //트랜잭션 히스토리
-
-            private Long id;
-            private String gubun;
-            private String sender;
-            private String receiver;
-            private Long amount;
-            @JsonIgnore
-            //: JSON 데이터로 변환할때에는 무시되는 변수
-            private Long depositAccountBalance;
-            //: 테스트를 위한 변수로 클라이언트에게 전달시에는 제외해야한다.
-            private String tel;
-            private String createdAt;
-
-            public TransactionDto(Transaction transaction) {
-                this.id = transaction.getId();
-                this.gubun = transaction.getGubun().getValue();
-                this.sender = transaction.getSender();
-                this.receiver = transaction.getReceiver();
-                this.amount = transaction.getAmount();
-                this.depositAccountBalance = transaction.getDepositAccountBalance();
-                this.tel = transaction.getTel();
-                this.createdAt = CustomDateUtil.toStringFormat(transaction.getCreatedAt());
-            }
-        }
-    }
 }

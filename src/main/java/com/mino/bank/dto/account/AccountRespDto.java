@@ -1,6 +1,9 @@
 package com.mino.bank.dto.account;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mino.bank.domain.Account;
+import com.mino.bank.domain.Transaction;
+import com.mino.bank.util.CustomDateUtil;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -39,5 +42,46 @@ public class AccountRespDto {
             this.balance = account.getBalance();
         }
     }
+    @Getter
+    @Setter
+    public static class AccountDepositRespDto{
+        private Long id;
+        private Long number;
+        private TransactionDto transaction;
 
+        public AccountDepositRespDto(Account account, Transaction transaction) {
+            this.id = account.getId();
+            this.number = account.getNumber();
+            this.transaction = new TransactionDto(transaction);
+        }
+
+        @Getter
+        @Setter
+        public class TransactionDto{
+            //트랜잭션 히스토리
+
+            private Long id;
+            private String gubun;
+            private String sender;
+            private String receiver;
+            private Long amount;
+            @JsonIgnore
+            //: JSON 데이터로 변환할때에는 무시되는 변수
+            private Long depositAccountBalance;
+            //: 테스트를 위한 변수로 클라이언트에게 전달시에는 제외해야한다.
+            private String tel;
+            private String createdAt;
+
+            public TransactionDto(Transaction transaction) {
+                this.id = transaction.getId();
+                this.gubun = transaction.getGubun().getValue();
+                this.sender = transaction.getSender();
+                this.receiver = transaction.getReceiver();
+                this.amount = transaction.getAmount();
+                this.depositAccountBalance = transaction.getDepositAccountBalance();
+                this.tel = transaction.getTel();
+                this.createdAt = CustomDateUtil.toStringFormat(transaction.getCreatedAt());
+            }
+        }
+    }
 }

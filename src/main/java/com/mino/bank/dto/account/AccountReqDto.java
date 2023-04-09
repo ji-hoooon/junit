@@ -6,7 +6,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.Digits;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 public class AccountReqDto {
     //요청을 위한 임시 DTO 작성
@@ -34,5 +36,23 @@ public class AccountReqDto {
         }
 
     }
+    @Getter
+    @Setter
+    public static class AccountDepositReqDto{
+        @NotNull
+        @Digits(integer =4, fraction = 4)
+        private Long number;
+        @NotNull
+        //0원 체크도 가능하긴 하지만 -> 서비스에서 체크
+        private Long amount;
+        @NotEmpty
+        @Pattern(regexp = "^(DEPOSIT)$")
+        private String gubun;   //DEPOSIT
+        @NotEmpty
+//        @Pattern(regexp = "^[0-9]{3}-[0-9]{4}[0-9]{4}")
+        @Pattern(regexp = "^[0-9]{11}")
+        private String tel; //입금이 잘못 되었을 때를 대비해 필요한 입금자 연락처
 
+        //: 정규표현식 테스트 필요
+    }
 }
