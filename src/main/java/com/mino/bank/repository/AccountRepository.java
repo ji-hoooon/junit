@@ -14,7 +14,11 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
      * @return
      */
     //select * from account where number = :number
-    //checkpoint: 리팩토링 필요 -> user 객체가 지연로딩이므로 함께 땡겨오도록 fetch join?
+    //: user 객체가 지연로딩이므로 함께 땡겨오도록 fetch join
+//    @Query ("SELECT AC FROM ACCOUNT AC JOIN FETCH AC.USER U WHERE AC.NUMBER= :NUMBER")
+    //: join fetch를 하면 조인해서 객체에 값을 미리 가져올 수 있다.
+
+    //하지만 여기서는 id만 필요하므로, 굳이 할 필요 없음
     Optional<Account> findByNumber(Long number);
 
     //로그인한 유저의 계좌 목록만 보는 메서드

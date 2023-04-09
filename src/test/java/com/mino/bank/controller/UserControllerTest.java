@@ -2,8 +2,8 @@ package com.mino.bank.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mino.bank.config.dummy.DummyObject;
-import com.mino.bank.repository.UserRepository;
 import com.mino.bank.dto.user.UserReqDto.JoinReqDto;
+import com.mino.bank.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,14 +11,20 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.EntityManager;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Transactional
+@ActiveProfiles("test")
+//: dev 모드에서 발동하는 DummyInit의 유저가 삽입되므로
+//@Transactional
+@Sql("classpath:db/teardown.sql")
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = WebEnvironment.MOCK)
 
@@ -33,6 +39,7 @@ public class UserControllerTest extends DummyObject {
         //given
         JoinReqDto joinReqDto=new JoinReqDto();
         joinReqDto.setUsername("love");
+//        joinReqDto.setUsername("ssar"); //dev모드일 때 DummyInit 발동해서 오류 발생하는걸 확인하기위해
         joinReqDto.setPassword("1234");
         joinReqDto.setEmail("love@nate.com");
         joinReqDto.setFullname("러브");
@@ -53,7 +60,10 @@ public class UserControllerTest extends DummyObject {
 
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
+
+    @Autowired
+    private EntityManager em;
 
 //    @BeforeEach
 //    public void setUp(){
@@ -68,6 +78,7 @@ public class UserControllerTest extends DummyObject {
     @BeforeEach
     public void setUp(){
         userRepository.save(newUser("ssar", "pepe ssar"));
+        em.clear();
     }
 
 

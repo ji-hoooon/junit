@@ -7,10 +7,13 @@ import com.mino.bank.dto.account.AccountRespDto.AccountSaveRespDto;
 import com.mino.bank.service.AccountService;
 import com.mino.bank.service.AccountService.AccountListRespDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -59,6 +62,12 @@ public class AccountController {
         AccountListRespDto accountListRespDto = accountService.계좌목록보기_유저별(loginUser.getUser().getId());
         //(2) 응답DTO 반환
         return new ResponseEntity<>(new ResponseDto<>(1,"계좌목록 보기_유저별 성공", accountListRespDto), OK);
+    }
+    @DeleteMapping("/s/account/{number}")
+    public ResponseEntity<?> deleteAccount(@PathVariable Long number, @AuthenticationPrincipal LoginUser loginUser){
+        accountService.계좌삭제(number, loginUser.getUser().getId());
+
+        return new ResponseEntity<>(new ResponseDto<>(1,"계좌 삭제 완료", null), HttpStatus.OK);
     }
 }
 

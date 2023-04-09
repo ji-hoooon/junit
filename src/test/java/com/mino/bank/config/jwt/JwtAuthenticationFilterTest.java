@@ -2,8 +2,8 @@ package com.mino.bank.config.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mino.bank.config.dummy.DummyObject;
-import com.mino.bank.repository.UserRepository;
 import com.mino.bank.dto.user.UserReqDto.LoginReqDto;
+import com.mino.bank.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +12,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -24,7 +24,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 //각각의 테스트 메서드가 실행이 끝나면 롤백이 진행된다.
 //: 테스트 코드에서는 롤백이 진행, 본 코드에서는 커밋이 진행
-@Transactional
+//@Transactional
+
+//SpringBootTest를 이용해 통합테스트 하는 부분엔 모두 테이블 truncate를 수행하자
+@Sql("classpath:db/teardown.sql")   //실행시점은 BeforeEach실행 직전마다 수행한다.
 //작성해둔 프로퍼티 설정을 적용하기 위한 어노테이션
 // '[org.hibernate.type]': TRACE 적용
 //: 쿼리에 들어가는 값까지 확인이 가능

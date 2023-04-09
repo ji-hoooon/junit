@@ -1,5 +1,6 @@
 package com.mino.bank.domain;
 
+import com.mino.bank.handler.ex.CustomApiException;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -51,5 +52,21 @@ public class Account {
         this.user = user;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+    }
+
+    /**
+     * 서비스에서 계좌 삭제, 출금,이체를 위해
+     * userId를 받아서 해당 계좌의 주인인지 체크하는 메서드
+     * @param userId
+     */
+    public void checkOwner(Long userId){
+//        String testUsername = user.getUsername();
+//        System.out.println("테스트 : "+testUsername);
+        //LAZY 로딩 발동할까? -> 발동해야 하지만 발동하지 않았음
+        //: PC에 존재하면 가져옴 -> 1차 캐싱
+
+        if(user.getId()!=userId){
+            throw new CustomApiException("계좌 소유자가 아닙니다.");
+        }
     }
 }

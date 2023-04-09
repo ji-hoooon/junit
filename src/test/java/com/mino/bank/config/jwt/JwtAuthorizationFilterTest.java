@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -19,6 +20,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 //작성해둔 프로퍼티 설정을 적용하기 위한 어노테이션
 // '[org.hibernate.type]': TRACE 적용
 //: 쿼리에 들어가는 값까지 확인이 가능
+@Sql("classpath:db/teardown.sql")
+
 @ActiveProfiles("test")
 //가짜 환경으로 스프링에 있는 컴포넌트들을 스캔해서 빈으로 등록
 @SpringBootTest(webEnvironment = WebEnvironment.MOCK)
