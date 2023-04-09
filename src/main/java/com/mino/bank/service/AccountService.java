@@ -150,6 +150,8 @@ public class AccountService {
         //(3) 입금 (해당 계좌 balance 조정 - update문 - 더티체킹)
         //: Account 클래스에 입금 메서드 작성
         depositAccountPS.deposit(accountDepositReqDto.getAmount());
+//        System.out.println("테스트 : "+depositAccountPS.getBalance());
+        //서비스 테스트를 위한 임시 값 확인
 
         //(4) 거래내역 남기기
         Transaction transaction = Transaction.builder()
