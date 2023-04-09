@@ -7,12 +7,14 @@ import com.mino.bank.domain.Transaction;
 import com.mino.bank.domain.User;
 import com.mino.bank.dto.account.AccountReqDto.AccountDepositReqDto;
 import com.mino.bank.dto.account.AccountReqDto.AccountSaveReqDto;
+import com.mino.bank.dto.account.AccountReqDto.AccountTransferReqDto;
 import com.mino.bank.dto.account.AccountRespDto.AccountDepositRespDto;
 import com.mino.bank.dto.account.AccountRespDto.AccountSaveRespDto;
 import com.mino.bank.handler.ex.CustomApiException;
 import com.mino.bank.repository.AccountRepository;
 import com.mino.bank.repository.TransactionRepository;
 import com.mino.bank.repository.UserRepository;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -253,5 +255,58 @@ class AccountServiceTest extends DummyObject {
 
         //then
         assertThat(ssarAccount.getBalance()).isEqualTo(900L);
+    }
+    /**
+     * 계좌이체 서비스 테스트
+     * stub은 꼭 필요할때만 만드는 것이 좋다.
+     * @throws Exception
+     */
+    @Test
+    public void 계좌이체_test() throws Exception{
+        //given
+        Long userId = 1L;
+        AccountTransferReqDto accountTransferReqDto=new AccountTransferReqDto();
+        accountTransferReqDto.setWithdrawNumber(1111L);
+        accountTransferReqDto.setDepositNumber(2222L);
+        accountTransferReqDto.setWithdrawPassword(1234L);
+        accountTransferReqDto.setAmount(100L);
+        accountTransferReqDto.setGubun("TRANSFER");
+        User ssar = newMockUser(userId, "ssar", "pepe ssar");   //실행 됨
+        User cos = newMockUser(userId, "cos", "pepe cos");   //실행 됨
+
+        Account withdrawAccount = newMockAccount(1L, 1111L, 1000L, ssar);
+        Account depositAccount = newMockAccount(2L, 2222L, 1000L, cos);
+
+        //(0) 입출금계좌 동일한지 테스트
+        if(accountTransferReqDto.getDepositNumber().longValue()==accountTransferReqDto.getWithdrawNumber()){
+            throw new CustomApiException("출금계좌번호와 입금계좌번호는 동일할 수 없습니다.");
+        }
+        //(1) 0원 체크
+        //: 크기비교의 경우에는 longValue() 불필요
+        if(accountTransferReqDto.getAmount()<=0L){
+            throw new CustomApiException("0원 이하의 금액을 입금할 수 없습니다.");
+        }
+
+        //(3) 출금계좌의 소유자 확인 (로그인한 유저와 동일한지 확인)
+        //: 동일한 유저인지 확인해야하는데, Account 객체에서 확인-checkOwner
+        withdrawAccount.checkOwner(userId);
+
+        //(4) 출금계좌 비밀번호 확인
+        //: Account 객체에 checkSamePassword 메서드 작성
+        withdrawAccount.checkSamePassword(accountTransferReqDto.getWithdrawPassword());
+
+        //(5) 출금계좌 잔액 확인
+        //: 출금하려는 금액보다 잔액이 많아야하므로, Account 객체에 checkBalance 메서드 필요
+//        withdrawAccountPS.checkBalance(accountWithdrawReqDto.getAmount());
+        //: 안전하지 않은 코드로, 출금하기시 잔액확인하도록 리팩토링
+
+        //(6) 이체하기
+        //: Account 객체에 withdraw 메서드 작성
+        withdrawAccount.withdraw(accountTransferReqDto.getAmount());
+        depositAccount.deposit(accountTransferReqDto.getAmount());
+
+        //then
+        Assertions.assertThat(withdrawAccount.getBalance()).isEqualTo(900L);
+        Assertions.assertThat(depositAccount.getBalance()).isEqualTo(1100L);
     }
 }
