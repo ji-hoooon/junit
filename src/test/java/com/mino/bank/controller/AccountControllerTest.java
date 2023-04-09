@@ -6,6 +6,7 @@ import com.mino.bank.domain.Account;
 import com.mino.bank.domain.User;
 import com.mino.bank.dto.account.AccountReqDto.AccountDepositReqDto;
 import com.mino.bank.dto.account.AccountReqDto.AccountSaveReqDto;
+import com.mino.bank.dto.account.AccountReqDto.AccountTransferReqDto;
 import com.mino.bank.dto.account.AccountReqDto.AccountWithdrawReqDto;
 import com.mino.bank.handler.ex.CustomApiException;
 import com.mino.bank.repository.AccountRepository;
@@ -185,7 +186,40 @@ class AccountControllerTest extends DummyObject {
         System.out.println("테스트 : "+responseBody);
 
         //then
+        resultActions.andExpect(status().isCreated());
 
+
+    }
+
+    /**
+     * 계좌이체 테스트
+     * @throws Exception
+     */
+    @WithUserDetails(value = "ssar", setupBefore = TestExecutionEvent.TEST_EXECUTION)    //DB에서 해당 유저를 조회해서 세션에 담아주는 어노테이션
+    @Test
+    public void transferAccount_test() throws Exception{
+        //given
+        //(1) 테스트를 위한 DTO 작성
+        AccountTransferReqDto accountTransferReqDto=new AccountTransferReqDto();
+        accountTransferReqDto.setWithdrawNumber(1111L);
+        accountTransferReqDto.setDepositNumber(2222L);
+        accountTransferReqDto.setWithdrawPassword(1234L);
+        accountTransferReqDto.setAmount(100L);
+        accountTransferReqDto.setGubun("TRANSFER");
+
+
+        //(2) 요청 DTO 확인
+        String requestBody = om.writeValueAsString(accountTransferReqDto);
+        System.out.println("테스트 : "+requestBody);
+
+        //when
+        ResultActions resultActions = mvc.perform(MockMvcRequestBuilders.post("/api/s/account/transfer").content(requestBody).contentType(MediaType.APPLICATION_JSON));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : "+responseBody);
+
+        //then
+        resultActions.andExpect(status().isCreated());
+        //: 서비스에서 검증은 했지만, JsonIgnore를 주석처리하고 입금계좌1100과, 출금계좌 900을 DTO로 확인한다.
     }
 
 }

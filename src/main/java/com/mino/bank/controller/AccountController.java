@@ -89,5 +89,14 @@ public class AccountController {
         AccountTransferRespDto accountWithdrawRespDto = accountService.계좌출금(accountWithdrawReqDto, loginUser.getUser().getId());
         return new ResponseEntity<>(new ResponseDto<>(1,"계좌 출금 완료", accountWithdrawRespDto), CREATED);
     }
+
+
+    //인증이 필요한 계좌 이체메서드
+    @PostMapping("/s/account/transfer")
+    public ResponseEntity<?> transferAccount(@RequestBody @Valid AccountReqDto.AccountTransferReqDto accountTransferReqDto, BindingResult bindingResult, @AuthenticationPrincipal LoginUser loginUser){
+        //BindingResult가 있어야 예외를 잡는다.
+        AccountTransferRespDto accountTransferRespDto = accountService.계좌이체(accountTransferReqDto, loginUser.getUser().getId());
+        return new ResponseEntity<>(new ResponseDto<>(1,"계좌 이체 완료", accountTransferRespDto), CREATED);
+    }
 }
 
