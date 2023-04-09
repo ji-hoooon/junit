@@ -9,6 +9,7 @@ import com.mino.bank.dto.account.AccountReqDto.AccountSaveReqDto;
 import com.mino.bank.handler.ex.CustomApiException;
 import com.mino.bank.repository.AccountRepository;
 import com.mino.bank.repository.UserRepository;
+import com.mino.bank.service.AccountService.AccountWithdrawReqDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -155,6 +156,35 @@ class AccountControllerTest extends DummyObject {
         //잔액이 아닌 상태코드만 확인하면 된다.
         resultActions.andExpect(status().isCreated());
         //잔액이 궁금하면 @JsonIgnore를 잠시 주석해제 후 확인 -> 서비스에서 테스트
+
+    }
+
+
+    /**
+     * 계좌출금 테스트
+     * @throws Exception
+     */
+    @WithUserDetails(value = "ssar", setupBefore = TestExecutionEvent.TEST_EXECUTION)    //DB에서 해당 유저를 조회해서 세션에 담아주는 어노테이션
+    @Test
+    public void withdrawAccount_test() throws Exception{
+        //given
+        //(1) 테스트를 위한 DTO 작성
+        AccountWithdrawReqDto accountWithdrawReqDto = new AccountWithdrawReqDto();
+        accountWithdrawReqDto.setNumber(1111L);
+        accountWithdrawReqDto.setPassword(1234L);
+        accountWithdrawReqDto.setAmount(100L);
+        accountWithdrawReqDto.setGubun("WITHDRAW");
+
+        //(2) 요청 DTO 확인
+        String requestBody = om.writeValueAsString(accountWithdrawReqDto);
+        System.out.println("테스트 : "+requestBody);
+
+        //when
+        ResultActions resultActions = mvc.perform(MockMvcRequestBuilders.post("/api/s/account/withdraw").content(requestBody).contentType(MediaType.APPLICATION_JSON));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : "+responseBody);
+
+        //then
 
     }
 

@@ -8,6 +8,7 @@ import com.mino.bank.dto.account.AccountRespDto.AccountDepositRespDto;
 import com.mino.bank.dto.account.AccountRespDto.AccountSaveRespDto;
 import com.mino.bank.service.AccountService;
 import com.mino.bank.service.AccountService.AccountListRespDto;
+import com.mino.bank.service.AccountService.AccountWithdrawRespDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -79,6 +80,14 @@ public class AccountController {
         //BindingResult가 있어야 예외를 잡는다.
         AccountDepositRespDto accountDepositRespDto = accountService.계좌입금(accountDepositReqDto);
         return new ResponseEntity<>(new ResponseDto<>(1,"계좌 입금 완료", accountDepositRespDto), CREATED);
+    }
+
+    //인증이 필요한 계좌 출금메서드
+    @PostMapping("/s/account/withdraw")
+    public ResponseEntity<?> withdrawAccount(@RequestBody @Valid AccountService.AccountWithdrawReqDto accountWithdrawReqDto, BindingResult bindingResult, @AuthenticationPrincipal LoginUser loginUser){
+        //BindingResult가 있어야 예외를 잡는다.
+        AccountWithdrawRespDto accountWithdrawRespDto = accountService.계좌출금(accountWithdrawReqDto, loginUser.getUser().getId());
+        return new ResponseEntity<>(new ResponseDto<>(1,"계좌 출금 완료", accountWithdrawRespDto), CREATED);
     }
 }
 

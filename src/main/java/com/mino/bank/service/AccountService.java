@@ -1,6 +1,5 @@
 package com.mino.bank.service;
 
-import com.mino.bank.config.auth.LoginUser;
 import com.mino.bank.domain.Account;
 import com.mino.bank.domain.Transaction;
 import com.mino.bank.domain.TransactionEnum;
@@ -18,7 +17,6 @@ import com.mino.bank.util.CustomDateUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -191,7 +189,7 @@ public class AccountService {
     //(7) 거래내역 남기기
     //(8) 출금 결과를 응답하기 위한 DTO 작성
 
-    public AccountWithdrawRespDto 계좌출금(AccountWithdrawReqDto accountWithdrawReqDto, @AuthenticationPrincipal LoginUser loginUser){
+    public AccountWithdrawRespDto 계좌출금(AccountWithdrawReqDto accountWithdrawReqDto, Long userId){
         //(1) 0원 체크
         if(accountWithdrawReqDto.getAmount()<=0L){
             throw new CustomApiException("0원 이하의 금액을 입금할 수 없습니다.");
@@ -202,7 +200,7 @@ public class AccountService {
         );
         //(3) 출금계좌의 소유자 확인 (로그인한 유저와 동일한지 확인)
         //: 동일한 유저인지 확인해야하는데, Account 객체에서 확인-checkOwner
-        withdrawAccountPS.checkOwner(loginUser.getUser().getId());
+        withdrawAccountPS.checkOwner(userId);
 
         //(4) 출금계좌 비밀번호 확인
         //: Account 객체에 checkSamePassword 메서드 작성
