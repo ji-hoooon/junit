@@ -3,6 +3,8 @@ package com.mino.bank.controller;
 import com.mino.bank.config.auth.LoginUser;
 import com.mino.bank.dto.ResponseDto;
 import com.mino.bank.dto.account.AccountReqDto;
+import com.mino.bank.dto.account.AccountReqDto.AccountDepositReqDto;
+import com.mino.bank.dto.account.AccountRespDto.AccountDepositRespDto;
 import com.mino.bank.dto.account.AccountRespDto.AccountSaveRespDto;
 import com.mino.bank.service.AccountService;
 import com.mino.bank.service.AccountService.AccountListRespDto;
@@ -68,6 +70,14 @@ public class AccountController {
         accountService.계좌삭제(number, loginUser.getUser().getId());
 
         return new ResponseEntity<>(new ResponseDto<>(1,"계좌 삭제 완료", null), HttpStatus.OK);
+    }
+
+
+    //인증이 필요없는 무통장입금메서드
+    @PostMapping("/account/deposit")
+    public ResponseEntity<?> depositAccount(@RequestBody @Valid AccountDepositReqDto accountDepositReqDto, BindingResult bindingResult){
+        AccountDepositRespDto accountDepositRespDto = accountService.계좌입금(accountDepositReqDto);
+        return new ResponseEntity<>(new ResponseDto<>(1,"계좌 입금 완료", accountDepositRespDto), CREATED);
     }
 }
 
