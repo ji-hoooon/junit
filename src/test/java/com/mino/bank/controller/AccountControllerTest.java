@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mino.bank.config.dummy.DummyObject;
 import com.mino.bank.domain.Account;
 import com.mino.bank.domain.User;
+import com.mino.bank.dto.account.AccountReqDto.AccountDepositReqDto;
 import com.mino.bank.dto.account.AccountReqDto.AccountSaveReqDto;
 import com.mino.bank.handler.ex.CustomApiException;
 import com.mino.bank.repository.AccountRepository;
@@ -22,12 +23,12 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import javax.persistence.EntityManager;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 //@Transactional
 @Sql("classpath:db/teardown.sql")
@@ -95,7 +96,7 @@ class AccountControllerTest extends DummyObject {
 
         //then
         //검증 수행
-        resultActions.andExpect(MockMvcResultMatchers.status().isCreated());
+        resultActions.andExpect(status().isCreated());
     }
 
     /**
@@ -128,6 +129,33 @@ class AccountControllerTest extends DummyObject {
         assertThrows(CustomApiException.class, ()->accountRepository.findByNumber(number).orElseThrow(
                 ()->new CustomApiException("계좌를 찾을 수 없습니다.")
         ));
+    }
+
+
+    @Test
+    public void depositAccount_test() throws Exception{
+        //given
+        //(1) 테스트를 위한 DTO 생성
+        AccountDepositReqDto accountDepositReqDto = new AccountDepositReqDto();
+        accountDepositReqDto.setNumber(1111L);
+        accountDepositReqDto.setAmount(100L);
+        accountDepositReqDto.setGubun("DEPOSIT");
+        accountDepositReqDto.setTel("01088888888");
+
+        //(2) 요청 DTO 확인
+        String requestBody = om.writeValueAsString(accountDepositReqDto);
+        System.out.println("테스트 : "+requestBody);
+
+        //when
+        ResultActions resultActions = mvc.perform(MockMvcRequestBuilders.post("/api/account/deposit").content(requestBody).contentType(MediaType.APPLICATION_JSON));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : "+responseBody);
+
+        //then
+        //잔액이 아닌 상태코드만 확인하면 된다.
+        resultActions.andExpect(status().isCreated());
+        //잔액이 궁금하면 @JsonIgnore를 잠시 주석해제 후 확인 -> 서비스에서 테스트
+
     }
 
 }

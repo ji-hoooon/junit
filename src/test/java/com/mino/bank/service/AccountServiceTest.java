@@ -155,9 +155,9 @@ class AccountServiceTest extends DummyObject {
         AccountDepositReqDto accountDepositReqDto = new AccountDepositReqDto();
         accountDepositReqDto.setNumber(1111L);
 
-        accountDepositReqDto.setAmount(0L); //(1) 0원 입금 테스트 실행
+//        accountDepositReqDto.setAmount(0L); //(1) 0원 입금 테스트 실행
         //(2) 입금시 기존 잔액에 추가로 더해지는지 -> Service에 syst 추가
-        //        accountDepositReqDto.setAmount(100L);
+        accountDepositReqDto.setAmount(100L);
         accountDepositReqDto.setGubun("DEPOSIT");
         accountDepositReqDto.setTel("01088888888");
 
