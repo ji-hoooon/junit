@@ -1,19 +1,28 @@
 package com.mino.bank.service;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mino.bank.domain.Account;
+import com.mino.bank.domain.Transaction;
+import com.mino.bank.domain.TransactionEnum;
 import com.mino.bank.domain.User;
 import com.mino.bank.dto.account.AccountReqDto.AccountSaveReqDto;
 import com.mino.bank.dto.account.AccountRespDto.AccountDto;
 import com.mino.bank.dto.account.AccountRespDto.AccountSaveRespDto;
 import com.mino.bank.handler.ex.CustomApiException;
 import com.mino.bank.repository.AccountRepository;
+import com.mino.bank.repository.TransactionRepository;
 import com.mino.bank.repository.UserRepository;
+import com.mino.bank.util.CustomDateUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +34,9 @@ import java.util.stream.Collectors;
 public class AccountService {
     private final UserRepository userRepository;
     private final AccountRepository accountRepository;
+
+    //입금 진행시 거래내역을 보존하기 위한 리포지토리 의존성 주입
+    private final TransactionRepository transactionRepository;
 
     //DB의 변경에 요구되므로, 커밋이 진행된다.
     @Transactional
@@ -121,5 +133,110 @@ public class AccountService {
 
         //(3) 계좌 삭제
         accountRepository.deleteById(accountPS.getId());
+    }
+
+    @Transactional
+    //무통장 입금이므로 인증이 필요없는 로직
+    //ATM에서 무통장 입금에 필요한 정보를 위한 요청 DTO 필요: AccountDepositReqDto
+    public AccountDepositRespDto 계좌입금(AccountDepositReqDto accountDepositReqDto){
+
+        //로직 순서가 매우 중요한 메서드
+        //(1) 0원 체크
+        if(accountDepositReqDto.getAmount()<=0L){
+            throw new CustomApiException("0원 이하의 금액을 입금할 수 없습니다.");
+        }
+
+        //(2) 입금계좌 확인
+        Account depositAccountPS = accountRepository.findByNumber(accountDepositReqDto.getNumber()).orElseThrow(
+                () -> new CustomApiException("계좌를 찾을 수 없습니다.")
+        );
+
+        //(3) 입금 (해당 계좌 balance 조정 - update문 - 더티체킹)
+        //: Account 클래스에 입금 메서드 작성
+        depositAccountPS.deposit(accountDepositReqDto.getAmount());
+
+        //(4) 거래내역 남기기
+        Transaction transaction = Transaction.builder()
+                .depositAccount(depositAccountPS)
+                .depositAccountBalance(depositAccountPS.getBalance())   //입금된 금액을 추가
+                .withdrawAccount(null)  //무통장입금이므로 이체일때만 존재
+                .withdrawAccountBalance(null)   //무통장입금이므로 이체일때만 존재
+                .amount(accountDepositReqDto.getAmount())   //입금할 금액을 추가
+                .gubun(TransactionEnum.DEPOSIT) //열거형을 이용해 구분값 설정
+                .sender("ATM")  //sender 값을 보고 나중에 ATM 문자열을 보고 출금 정보가 없는 것을 알 수도 있다.
+                .receiver(accountDepositReqDto.getNumber() + "")  //받는 사람 (계좌번호)
+                .tel(accountDepositReqDto.getTel())
+                .build();
+
+        Transaction transactionPS = transactionRepository.save(transaction);
+
+        //(5) 입금 성공했다는 응답을 하기위한 DTO 작성 : 필요한 정보는 id, number, TransactionDto
+        //: TransactionDto의 경우 Transaction 객체를 받아 생성
+        return new AccountDepositRespDto(depositAccountPS, transactionPS);
+    }
+
+
+
+    @Getter
+    @Setter
+    public static class AccountDepositReqDto{
+        @NotNull
+        @Digits(integer =4, fraction = 4)
+        private Long number;
+        @NotNull
+        //0원 체크도 가능하긴 하지만 -> 서비스에서 체크
+        private Long amount;
+        @NotEmpty
+        @Pattern(regexp = "^(DEPOSIT)$")
+        private String gubun;   //DEPOSIT
+        @NotEmpty
+//        @Pattern(regexp = "^[0-9]{3}-[0-9]{4}[0-9]{4}")
+        @Pattern(regexp = "^[0-9]{11}")
+        private String tel; //입금이 잘못 되었을 때를 대비해 필요한 입금자 연락처
+
+        //: 정규표현식 테스트 필요
+    }
+
+    @Getter
+    @Setter
+    public static class AccountDepositRespDto{
+        private Long id;
+        private Long number;
+        private TransactionDto transaction;
+
+        public AccountDepositRespDto(Account account, Transaction transaction) {
+            this.id = account.getId();
+            this.number = account.getNumber();
+            this.transaction = new TransactionDto(transaction);
+        }
+
+        @Getter
+        @Setter
+        public class TransactionDto{
+            //트랜잭션 히스토리
+
+            private Long id;
+            private String gubun;
+            private String sender;
+            private String receiver;
+            private Long amount;
+            @JsonIgnore
+            //: JSON 데이터로 변환할때에는 무시되는 변수
+            private Long depositAccountBalance;
+            //: 테스트를 위한 변수로 클라이언트에게 전달시에는 제외해야한다.
+            private String tel;
+            private String createdAt;
+
+            public TransactionDto(Transaction transaction) {
+                this.id = transaction.getId();
+                this.gubun = transaction.getGubun().getValue();
+                this.sender = transaction.getSender();
+                this.receiver = transaction.getReceiver();
+                this.amount = transaction.getAmount();
+                this.depositAccountBalance = transaction.getDepositAccountBalance();
+                this.tel = transaction.getTel();
+                this.createdAt = CustomDateUtil.toStringFormat(transaction.getCreatedAt());
+            }
+        }
     }
 }
