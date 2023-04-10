@@ -108,6 +108,9 @@ public class SecurityConfig {
         configuration.addAllowedMethod("*");    //HTTP 메서드와 자바스크립트 요청 허용
         configuration.addAllowedOriginPattern("*");     //모든 IP 주소 허용(추후 프론트 엔드 쪽 IP 허용하도록 변경)
         configuration.setAllowCredentials(true);    //클라이언트에서 쿠키 요청 허용
+        configuration.addExposedHeader("Authorization");
+        //: 실제 서버에서는 JWT 탈취 위험성 때문에 보안조치가 필요하다.
+        // : cors-safelisted reponse header만 노출
 
         UrlBasedCorsConfigurationSource source= new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration); //작성한 설정을 모든 주소에 적용
