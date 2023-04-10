@@ -258,13 +258,15 @@ class AccountServiceTest extends DummyObject {
     }
     /**
      * 계좌이체 서비스 테스트
+     * 완벽한 테스트는 불가능하지만 꼼꼼하게 테스트할 수 있도록 짜야한다.
      * stub은 꼭 필요할때만 만드는 것이 좋다.
+     * checkOwner 메서드의 잠재적 오류 : userId가 127을 넘어가면 동등비교 불
      * @throws Exception
      */
     @Test
     public void 계좌이체_test() throws Exception{
         //given
-        Long userId = 1L;
+        Long userId = 1000L;
         AccountTransferReqDto accountTransferReqDto=new AccountTransferReqDto();
         accountTransferReqDto.setWithdrawNumber(1111L);
         accountTransferReqDto.setDepositNumber(2222L);
@@ -272,7 +274,9 @@ class AccountServiceTest extends DummyObject {
         accountTransferReqDto.setAmount(100L);
         accountTransferReqDto.setGubun("TRANSFER");
         User ssar = newMockUser(userId, "ssar", "pepe ssar");   //실행 됨
-        User cos = newMockUser(userId, "cos", "pepe cos");   //실행 됨
+//        User ssar = newMockUser(1000L, "ssar", "pepe ssar");   //실행 됨
+        //: 127L이 넘어가고, 해당 값을 명시하면 -> 동등 비교 오류 발생 -> longValue() 메서드 필요
+        User cos = newMockUser(2000L, "cos", "pepe cos");   //실행 됨
 
         Account withdrawAccount = newMockAccount(1L, 1111L, 1000L, ssar);
         Account depositAccount = newMockAccount(2L, 2222L, 1000L, cos);

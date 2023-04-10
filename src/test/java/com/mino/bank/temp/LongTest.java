@@ -28,4 +28,21 @@ public class LongTest {
         //then
 
     }
+
+    @Test
+    public void long_test2 () throws Exception{
+        //given
+        Long v1= 1000L;
+        Long v2= 1000L;
+
+        //Long 값이 충분히 작으면 ==비교로 가능 2의8승까지 -126~127까지만 가능
+
+        //when
+        if(v1==v2){
+            System.out.println("테스트 : 같습니다.");
+        }
+
+        //then
+
+    }
 }

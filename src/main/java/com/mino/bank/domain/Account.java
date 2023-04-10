@@ -65,7 +65,12 @@ public class Account {
         //LAZY 로딩 발동할까? -> 발동해야 하지만 발동하지 않았음
         //: PC에 존재하면 가져옴 -> 1차 캐싱
 
-        if(user.getId()!=userId){
+//        if(user.getId()!=userId){
+//            throw new CustomApiException("계좌 소유자가 아닙니다.");
+//        }
+        //: 127L이상 넘어가면 동등비교 실패
+
+        if(user.getId().longValue()!=userId.longValue()){
             throw new CustomApiException("계좌 소유자가 아닙니다.");
         }
     }

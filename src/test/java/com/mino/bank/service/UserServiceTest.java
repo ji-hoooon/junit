@@ -80,6 +80,8 @@ public class UserServiceTest extends DummyObject {
 
 
         assertThat(joinRespDto.getId()).isEqualTo(1L);
+        //: Long값인데 EuqalsTo로 127L이 넘아가도 가능할까? -> 가능
+
         assertThat(joinRespDto.getUsername()).isEqualTo("ssar");
     }
 }
