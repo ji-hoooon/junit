@@ -39,10 +39,11 @@ public class LongTest {
 
         //when
         if(v1==v2){
-            System.out.println("테스트 : 같습니다.");
+            System.out.println("테스트1 : 같습니다.");
         }
-
-        //then
+        if(v1.longValue()==v2.longValue()){
+            System.out.println("테스트2 : 같습니다.");
+        }
 
     }
 }

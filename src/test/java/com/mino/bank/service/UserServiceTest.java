@@ -2,9 +2,9 @@ package com.mino.bank.service;
 
 import com.mino.bank.config.dummy.DummyObject;
 import com.mino.bank.domain.User;
-import com.mino.bank.repository.UserRepository;
 import com.mino.bank.dto.user.UserReqDto.JoinReqDto;
 import com.mino.bank.dto.user.UserRespDto.JoinRespDto;
+import com.mino.bank.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

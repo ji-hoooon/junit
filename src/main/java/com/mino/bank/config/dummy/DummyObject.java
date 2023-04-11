@@ -5,6 +5,7 @@ import com.mino.bank.domain.Transaction;
 import com.mino.bank.domain.TransactionEnum;
 import com.mino.bank.domain.User;
 import com.mino.bank.domain.UserEnum;
+import com.mino.bank.repository.AccountRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDateTime;
@@ -108,4 +109,64 @@ public class DummyObject {
                 .build();
         return transaction;
     }
-}
+    protected Transaction newDepositTransaction(Account account, AccountRepository accountRepository){
+     account.deposit(100L); //1000원이었을 경우 900원이 된다.
+     //서비스 레이어를 통해 수행한 메서드가 아니므로, 더티체킹이 안된다.
+        if(accountRepository!=null){
+            accountRepository.save(account);
+            //DB에 900원으로 변경
+        }
+        Transaction transaction = Transaction.builder()
+                .withdrawAccount(null)
+                .withdrawAccountBalance(null)
+                .depositAccount(account)
+                .depositAccountBalance(account.getBalance())
+                .amount(100L)
+                .gubun(TransactionEnum.DEPOSIT)
+                .sender("ATM")
+                .receiver(account.getNumber()+"")
+                .tel("01022227777")
+                .build();
+        return transaction;
+    }
+    protected Transaction newWithdrawTransaction(Account account, AccountRepository accountRepository){
+        account.withdraw(100L); //1000원이었을 경우 900원이 된다.
+        //서비스 레이어를 통해 수행한 메서드가 아니므로, 더티체킹이 안된다.
+        if(accountRepository!=null){
+            accountRepository.save(account);
+            //DB에 900원으로 변경
+        }
+        Transaction transaction = Transaction.builder()
+                .withdrawAccount(account)
+                .withdrawAccountBalance(account.getBalance())
+                .depositAccount(null)
+                .depositAccountBalance(null)
+                .amount(100L)
+                .gubun(TransactionEnum.WITHDRAW)
+                .receiver("ATM")
+                .sender(account.getNumber()+"")
+                .build();
+        return transaction;
+    }
+    protected Transaction newTransferTransaction(Account withdrawAccount,Account depositAccount, AccountRepository accountRepository){
+        withdrawAccount.withdraw(100L); //1000원이었을 경우 900원이 된다.
+        depositAccount.deposit(100L); //1000원이었을 경우 900원이 된다.
+        //서비스 레이어를 통해 수행한 메서드가 아니므로, 더티체킹이 안된다.
+        if(accountRepository!=null){
+            accountRepository.save(withdrawAccount);
+            //DB에 900원으로 변경
+        }
+        Transaction transaction = Transaction.builder()
+                .withdrawAccount(withdrawAccount)
+                .withdrawAccountBalance(withdrawAccount.getBalance())
+                .depositAccount(depositAccount)
+                .depositAccountBalance(depositAccount.getBalance())
+                .amount(100L)
+                .gubun(TransactionEnum.WITHDRAW)
+                .receiver(depositAccount.getNumber()+"")
+                .sender("ATM")
+                .build();
+        return transaction;
+    }
+
+ }
