@@ -132,6 +132,9 @@ public class DummyObject {
     protected Transaction newWithdrawTransaction(Account account, AccountRepository accountRepository){
         account.withdraw(100L); //1000원이었을 경우 900원이 된다.
         //서비스 레이어를 통해 수행한 메서드가 아니므로, 더티체킹이 안된다.
+
+        //Repository 테스트에서는 더티체킹이 되고, Controller 테스트에서는 더티체킹이 안된다.
+        //: save 필수
         if(accountRepository!=null){
             accountRepository.save(account);
             //DB에 900원으로 변경
@@ -151,7 +154,10 @@ public class DummyObject {
     protected Transaction newTransferTransaction(Account withdrawAccount,Account depositAccount, AccountRepository accountRepository){
         withdrawAccount.withdraw(100L); //1000원이었을 경우 900원이 된다.
         depositAccount.deposit(100L); //1000원이었을 경우 900원이 된다.
+
         //서비스 레이어를 통해 수행한 메서드가 아니므로, 더티체킹이 안된다.
+        //Repository 테스트에서는 더티체킹이 되고, Controller 테스트에서는 더티체킹이 안된다.
+        //: save 필수
         if(accountRepository!=null){
             accountRepository.save(withdrawAccount);
             //DB에 900원으로 변경
