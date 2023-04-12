@@ -171,7 +171,9 @@ public class DummyObject {
                 .gubun(TransactionEnum.TRANSFER)
                 //: 오류체크 ㅜㅜ
                 .receiver(depositAccount.getNumber()+"")
-                .sender("ATM")
+//                .sender("ATM")
+                .sender(withdrawAccount.getNumber() + "")
+                //: 오류체크 ㅜㅜ
                 .build();
         return transaction;
     }
