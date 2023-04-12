@@ -40,7 +40,9 @@ public class TransactionRespDto {
             //계좌이체 -> 내 계좌 번호와 같은 계좌의 잔액을 출력하기 위해 accountNumber 필요
             public TransactionDto(Transaction transaction, Long accountNumber) {
                 this.id = transaction.getId();
-                this.gubun = transaction.getGubun()+"";
+//                this.gubun = transaction.getGubun()+"";
+                this.gubun = transaction.getGubun().getValue();
+                //: gubun의 경우 열거형이므로, getValue로 받아야한다.
                 this.amount = transaction.getAmount();
                 this.sender = transaction.getSender();
                 this.receiver = transaction.getReceiver();

@@ -59,19 +59,6 @@ class AccountControllerTest extends DummyObject {
     private EntityManager em;
 
     //테스트 전에 DB에 유저를 추가하기 위한 어노테이션
-    @BeforeEach
-    public void setUp(){
-        User ssar = userRepository.save(newUser("ssar", "pepe ssar"));
-        User cos = userRepository.save(newUser("cos", "pepe coco"));
-
-        //계좌삭제 테스트를 위해 계좌 데이터 생성
-        Account ssarAccount1 = accountRepository.save(newAccount(1111L, ssar));
-        Account cosAccount1 = accountRepository.save(newAccount(2222L, cos));
-
-        //테스트를 제대로 수행하기 위해 영속성 컨텍스트 초기화
-        em.clear();
-    }
-
     //계좌등록 전에 로그인 필요
     //실제 로그인 로직 : jwt -> 인증 필터 -> 시큐리티 세션 생성
     //: JWT를 이용한 토큰 방식의 로그인보다는, 세션에 직접 LoginUser를 주입하는 방식으로 강제 로그인 진행
@@ -99,6 +86,19 @@ class AccountControllerTest extends DummyObject {
         //then
         //검증 수행
         resultActions.andExpect(status().isCreated());
+    }
+
+    @BeforeEach
+    public void setUp(){
+        User ssar = userRepository.save(newUser("ssar", "pepe ssar"));
+        User cos = userRepository.save(newUser("cos", "pepe coco"));
+
+        //계좌삭제 테스트를 위해 계좌 데이터 생성
+        Account ssarAccount1 = accountRepository.save(newAccount(1111L, ssar));
+        Account cosAccount1 = accountRepository.save(newAccount(2222L, cos));
+
+        //테스트를 제대로 수행하기 위해 영속성 컨텍스트 초기화
+        em.clear();
     }
 
     /**

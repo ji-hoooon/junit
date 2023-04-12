@@ -26,6 +26,7 @@ public class TransactionService {
         );
         //(2) 해당 계좌의 소유자 체크
         accountPS.checkOwner(userId);
+        //: 유일하게 테스트해야하는 로직이지만, 이미 accountService에서 테스트했으므로 패스
 
         //(3) 입출금내역 출력을 위한 DTO 작성
         List<Transaction> transactionListPS = transactionRepository.findTransactionList(accountPS.getId(), gubun, page);
