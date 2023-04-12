@@ -161,6 +161,9 @@ public class DummyObject {
         if(accountRepository!=null){
             accountRepository.save(withdrawAccount);
             //DB에 900원으로 변경
+            accountRepository.save(depositAccount);
+            //: 오류체크 ㅜㅜ -> 둘다 save필요
+
         }
         Transaction transaction = Transaction.builder()
                 .withdrawAccount(withdrawAccount)

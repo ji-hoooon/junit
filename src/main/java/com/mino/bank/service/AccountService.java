@@ -9,6 +9,7 @@ import com.mino.bank.dto.account.AccountReqDto.AccountSaveReqDto;
 import com.mino.bank.dto.account.AccountReqDto.AccountTransferReqDto;
 import com.mino.bank.dto.account.AccountReqDto.AccountWithdrawReqDto;
 import com.mino.bank.dto.account.AccountRespDto.AccountDepositRespDto;
+import com.mino.bank.dto.account.AccountRespDto.AccountDetailRespDto;
 import com.mino.bank.dto.account.AccountRespDto.AccountDto;
 import com.mino.bank.dto.account.AccountRespDto.AccountSaveRespDto;
 import com.mino.bank.dto.account.AccountRespDto.AccountTransferRespDto;
@@ -300,6 +301,22 @@ public class AccountService {
         //(8) 이체 결과를 응답하기 위한 DTO 작성 (DTO 검증은 컨트롤러에서 진행)
         //: AccountTransferReqDto
         return new AccountTransferRespDto(withdrawAccountPS,transactionPS);
+    }
+
+
+
+    //계좌 상세보기
+    public AccountDetailRespDto 계좌상세보기(Long number, Long userId, Integer page){
+        //(1) 고정할 변수
+        String gubun = "ALL";
+
+        Account accountPS=accountRepository.findByNumber(number).orElseThrow(
+                ()->new CustomApiException("계좌를 찾을 수 없습니다.")
+        );
+
+        List<Transaction> transactionListPS =transactionRepository.findTransactionList(accountPS.getId(),gubun,page);
+
+        return new AccountDetailRespDto(accountPS, transactionListPS);
     }
 
 

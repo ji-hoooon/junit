@@ -26,6 +26,7 @@ public class DummyInit extends DummyObject{
             //계좌삭제 테스트를 위해 계좌 데이터 생성
             Account ssarAccount1 = accountRepository.save(newAccount(1111L, ssar));
             Account cosAccount1 = accountRepository.save(newAccount(2222L, cos));
+
         };
     }
 }

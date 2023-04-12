@@ -5,6 +5,7 @@ import com.mino.bank.dto.ResponseDto;
 import com.mino.bank.dto.account.AccountReqDto;
 import com.mino.bank.dto.account.AccountReqDto.AccountDepositReqDto;
 import com.mino.bank.dto.account.AccountRespDto.AccountDepositRespDto;
+import com.mino.bank.dto.account.AccountRespDto.AccountDetailRespDto;
 import com.mino.bank.dto.account.AccountRespDto.AccountSaveRespDto;
 import com.mino.bank.dto.account.AccountRespDto.AccountTransferRespDto;
 import com.mino.bank.service.AccountService;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
@@ -97,6 +99,12 @@ public class AccountController {
         //BindingResult가 있어야 예외를 잡는다.
         AccountTransferRespDto accountTransferRespDto = accountService.계좌이체(accountTransferReqDto, loginUser.getUser().getId());
         return new ResponseEntity<>(new ResponseDto<>(1,"계좌 이체 완료", accountTransferRespDto), CREATED);
+    }
+
+    @GetMapping("/s/account/{number}")
+    public ResponseEntity<?> detailAccount(@PathVariable Long number, @AuthenticationPrincipal LoginUser loginUser, @RequestParam(value = "page", defaultValue = "0") Integer page){
+        AccountDetailRespDto accountDetailRespDto = accountService.계좌상세보기(number, loginUser.getUser().getId(), page);
+        return new ResponseEntity<>(new ResponseDto<>(1,"계좌상세보기 완료", accountDetailRespDto), CREATED);
     }
 }
 

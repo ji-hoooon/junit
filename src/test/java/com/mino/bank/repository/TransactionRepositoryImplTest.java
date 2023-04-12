@@ -161,7 +161,7 @@ public class TransactionRepositoryImplTest extends DummyObject {
         });
     }
 
-    private void dataSetting() {
+     private void dataSetting() {
         User ssar = userRepository.save(newUser("ssar", "쌀"));
         User cos = userRepository.save(newUser("cos", "코스,"));
         User love = userRepository.save(newUser("love", "러브"));
