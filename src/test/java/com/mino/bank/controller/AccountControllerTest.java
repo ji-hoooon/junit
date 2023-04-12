@@ -32,6 +32,7 @@ import javax.persistence.EntityManager;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 //@Transactional
@@ -254,10 +255,10 @@ class AccountControllerTest extends DummyObject {
 
         //then
         //: JSON 데이터 검증시에는 jsonPath 이용
-//        resultActions.andExpect(jsonPath("$.data.transactions[0].balance").value(900L));
-//        resultActions.andExpect(jsonPath("$.data.transactions[1].balance").value(800L));
-//        resultActions.andExpect(jsonPath("$.data.transactions[2].balance").value(700L));
-//        resultActions.andExpect(jsonPath("$.data.transactions[3].balance").value(800L));
+        resultActions.andExpect(jsonPath("$.data.transactions[0].balance").value(900L));
+        resultActions.andExpect(jsonPath("$.data.transactions[1].balance").value(800L));
+        resultActions.andExpect(jsonPath("$.data.transactions[2].balance").value(700L));
+        resultActions.andExpect(jsonPath("$.data.transactions[3].balance").value(800L));
     }
 
 
