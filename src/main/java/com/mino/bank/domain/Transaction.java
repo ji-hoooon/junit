@@ -27,8 +27,12 @@ public class Transaction {
     //출금 정보
     //입금 정보
     @ManyToOne (fetch=FetchType.LAZY)
+    //cascade 삭제를 위한 제약조건 해제
+    @JoinColumn(foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Account withdrawAccount;
     @ManyToOne (fetch=FetchType.LAZY)
+    //cascade 삭제를 위한 제약조건 해제
+    @JoinColumn(foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Account depositAccount;
 
     private Long amount;
