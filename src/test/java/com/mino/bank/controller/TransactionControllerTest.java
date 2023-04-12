@@ -24,11 +24,14 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import javax.persistence.EntityManager;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+
 @Sql("classpath:db/teardown.sql")
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = WebEnvironment.MOCK)
 class TransactionControllerTest extends DummyObject {
+    //서비스 레이어에서 안한 DTO테스트 수행 필요!!
 
     //(1) @Autowired로 주입시 빼먹을 수 있다.
     //(2) 리플렉션으로 찾는데 시간이 걸린다.
@@ -90,7 +93,7 @@ class TransactionControllerTest extends DummyObject {
     //:  TEST_METHOD 즉, @WithUserDetails가 setUp() 메서드 수행 전에 실행되기 때문에
     @WithUserDetails(value = "ssar", setupBefore = TestExecutionEvent.TEST_EXECUTION)    //DB에서 해당 유저를 조회해서 세션에 담아주는 어노테이션
     @Test
-    public void findTransactionalList_test() throws Exception{
+    public void findTransactionalList_ssar_test() throws Exception{
         //given
         Long number=1111L;
         String gubun="ALL";
@@ -104,7 +107,31 @@ class TransactionControllerTest extends DummyObject {
         System.out.println("테스트 : "+responseBody);
 
         //then
-
+        //: JSON 데이터 검증시에는 jsonPath 이용
+        resultActions.andExpect(jsonPath("$.data.transactions[0].balance").value(900L));
+        resultActions.andExpect(jsonPath("$.data.transactions[1].balance").value(800L));
+        resultActions.andExpect(jsonPath("$.data.transactions[2].balance").value(700L));
+        resultActions.andExpect(jsonPath("$.data.transactions[3].balance").value(800L));
     }
 
+    @WithUserDetails(value = "cos", setupBefore = TestExecutionEvent.TEST_EXECUTION)    //DB에서 해당 유저를 조회해서 세션에 담아주는 어노테이션
+    @Test
+    public void findTransactionalList_cos_test() throws Exception{
+        //given
+        Long number=2222L;
+        String gubun="ALL";
+        String page="0";
+
+        //when
+        ResultActions resultActions=mvc.perform(MockMvcRequestBuilders.get("/api/s/account/"+number+"/transaction").param("gubun", gubun).param("page", page));
+        //동적 쿼리이므로 -> Param 필요 -> 하나일 땐 param, 두개이상 params
+        //바디가 존재할 때만 필요한 content, ContentType - POST,PUT
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : "+responseBody);
+
+        //then
+        resultActions.andExpect(jsonPath("$.data.transactions[0].balance").value(1100L));
+        resultActions.andExpect(jsonPath("$.data.transactions[1].balance").value(1200L));
+        resultActions.andExpect(jsonPath("$.data.transactions[2].balance").value(1100L));
+    }
 }
