@@ -6,6 +6,7 @@ import com.mino.bank.dto.transaction.TransactionRespDto.TransactionListRespDto;
 import com.mino.bank.service.AccountService;
 import com.mino.bank.service.TransactionService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,8 +31,8 @@ public class TransactionController {
         //쿼리스트링, x-www-form-urlencoded는 모두 문자열로 들어오므로, 기본값 설정시에는 모두 문자열로 -> 자동 바인딩
         TransactionListRespDto transactionListRespDto= transactionService.입출금목록보기(loginUser.getUser().getId(), number,gubun,page);
 
-//        return new ResponseEntity<>(new ResponseDto<>(1,"입출금목록보기 완료", transactionListRespDto), HttpStatus.OK);
-        return ResponseEntity.ok(new ResponseDto<>(1,"입출금목록보기 완료", transactionListRespDto));
+        return new ResponseEntity<>(new ResponseDto<>(1,"입출금목록보기 완료", transactionListRespDto), HttpStatus.OK);
+//        return ResponseEntity.ok().body(new ResponseDto<>(1,"입출금목록보기 완료", transactionListRespDto));
     }
 
 }

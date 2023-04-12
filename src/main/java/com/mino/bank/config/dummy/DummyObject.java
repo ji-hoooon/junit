@@ -168,7 +168,8 @@ public class DummyObject {
                 .depositAccount(depositAccount)
                 .depositAccountBalance(depositAccount.getBalance())
                 .amount(100L)
-                .gubun(TransactionEnum.WITHDRAW)
+                .gubun(TransactionEnum.TRANSFER)
+                //: 오류체크 ㅜㅜ
                 .receiver(depositAccount.getNumber()+"")
                 .sender("ATM")
                 .build();

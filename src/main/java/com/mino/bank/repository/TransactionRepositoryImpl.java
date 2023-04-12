@@ -12,7 +12,8 @@ import java.util.List;
 interface Dao{
     //파라미터 하나면 @Param이 필요없지만
     //파라미터 여러개면 어노테이션이 필요하다.
-    List<Transaction> findTransactionList(@Param("accountId") Long accountId, String gubun, @Param("page") Integer page);
+    List<Transaction> findTransactionList(@Param("accountId") Long accountId,@Param("gubun") String gubun, @Param("page") Integer page);
+    //: 모두 @Param 붙어있는지 꼭 확인 -> 파람 어노테이션이 없어도 에러라고 출력하지 않음
 }
 
 @RequiredArgsConstructor
@@ -48,10 +49,10 @@ public class TransactionRepositoryImpl implements Dao{
         }else{  //gubun=ALL
             //입출력 : 아우터 조인 필요
             sql+="left join t.withdrawAccount wa ";
-            sql+="left join t.withdrawAccount da ";
-            sql+="where t.depositAccount.id =: depositAccountId ";
+            sql+="left join t.depositAccount da ";
+            sql+="where t.withdrawAccount.id =: withdrawAccountId ";
             sql+="or ";
-            sql+= "t.withdrawAccount.id =: withdrawAccountId ";
+            sql+="t.depositAccount.id =: depositAccountId";
         }
 
         //createQuery - JPQL, createNativeQuery - SQL
