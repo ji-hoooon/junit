@@ -63,6 +63,8 @@ public class TransactionRepositoryImplTest extends DummyObject {
         // then
         assertThat(transactionListPS.get(3).getDepositAccountBalance()).isEqualTo(800L);
     }
+
+
     @Test
     public void findTransactionList_withdraw_test() throws Exception {
         // given
@@ -84,6 +86,7 @@ public class TransactionRepositoryImplTest extends DummyObject {
             System.out.println("테스트 : ======================================");
         });
         // then
+        assertThat(transactionListPS.get(2).getDepositAccountBalance()).isEqualTo(1100L);
     }
     @Test
     public void findTransactionList_deposit_test() throws Exception {
@@ -106,6 +109,32 @@ public class TransactionRepositoryImplTest extends DummyObject {
             System.out.println("테스트 : ======================================");
         });
         // then
+        assertThat(transactionListPS.get(0).getDepositAccountBalance()).isEqualTo(800L);
+    }
+
+    @Test
+    public void findTransactionList_withdraw_fetchjoin_test() throws Exception {
+        // given
+        Long accountId = 1L;
+
+        // when
+        List<Transaction> transactionListPS = transactionRepository.findTransactionList(accountId, "WITHDRAW",
+                0);
+        transactionListPS.forEach((t) -> {
+            System.out.println("테스트 : id : " + t.getId());
+            System.out.println("테스트 : amount : " + t.getAmount());
+            System.out.println("테스트 : sender : " + t.getSender());
+            System.out.println("테스트 : reciver : " + t.getReceiver());
+            System.out.println("테스트 : withdrawAccount잔액 : " + t.getWithdrawAccountBalance());
+            System.out.println("테스트 : depositAccount잔액 : " + t.getDepositAccountBalance());
+            System.out.println("테스트 : 잔액 : " + t.getWithdrawAccount().getBalance());
+            //join fetch를 사용하지 않으면, 조인은 하지만 프로젝션은 하지 않는다. -> fetch join을 사용해 엔티티와 연관된 다른 엔티티 함께 로딩한다.
+            System.out.println("테스트 : fullname : " +t.getWithdrawAccount().getUser().getFullname());
+            //더미데이터 세팅 후 영속성 컨텍스트를 초기화 해야한다. -> 초기화 하지 않으면, 영속성 컨텍스트에 존재하기 때문에 쿼리가 날라가지 않는다.
+            System.out.println("테스트 : ======================================");
+        });
+        // then
+        assertThat(transactionListPS.get(2).getDepositAccountBalance()).isEqualTo(1100L);
     }
 
     @Test
