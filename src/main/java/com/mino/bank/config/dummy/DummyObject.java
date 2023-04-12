@@ -134,7 +134,7 @@ public class DummyObject {
         //서비스 레이어를 통해 수행한 메서드가 아니므로, 더티체킹이 안된다.
 
         //Repository 테스트에서는 더티체킹이 되고, Controller 테스트에서는 더티체킹이 안된다.
-        //: save 필수
+        //: save 필수 -> 테스트간 일관성을 위해서
         if(accountRepository!=null){
             accountRepository.save(account);
             //DB에 900원으로 변경

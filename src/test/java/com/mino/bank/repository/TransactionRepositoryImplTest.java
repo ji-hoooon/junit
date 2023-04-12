@@ -60,10 +60,52 @@ public class TransactionRepositoryImplTest extends DummyObject {
             // t.getWithdrawAccount().getUser().getFullname());
             System.out.println("테스트 : ======================================");
         });
-
         // then
         assertThat(transactionListPS.get(3).getDepositAccountBalance()).isEqualTo(800L);
+    }
+    @Test
+    public void findTransactionList_withdraw_test() throws Exception {
+        // given
+        Long accountId = 1L;
 
+        // when
+        List<Transaction> transactionListPS = transactionRepository.findTransactionList(accountId, "WITHDRAW",
+                0);
+        transactionListPS.forEach((t) -> {
+            System.out.println("테스트 : id : " + t.getId());
+            System.out.println("테스트 : amount : " + t.getAmount());
+            System.out.println("테스트 : sender : " + t.getSender());
+            System.out.println("테스트 : reciver : " + t.getReceiver());
+            System.out.println("테스트 : withdrawAccount잔액 : " + t.getWithdrawAccountBalance());
+            System.out.println("테스트 : depositAccount잔액 : " + t.getDepositAccountBalance());
+            System.out.println("테스트 : 잔액 : " + t.getWithdrawAccount().getBalance());
+            // System.out.println("테스트 : fullname : " +
+            // t.getWithdrawAccount().getUser().getFullname());
+            System.out.println("테스트 : ======================================");
+        });
+        // then
+    }
+    @Test
+    public void findTransactionList_deposit_test() throws Exception {
+        // given
+        Long accountId = 1L;
+
+        // when
+        List<Transaction> transactionListPS = transactionRepository.findTransactionList(accountId, "DEPOSIT",
+                0);
+        transactionListPS.forEach((t) -> {
+            System.out.println("테스트 : id : " + t.getId());
+            System.out.println("테스트 : amount : " + t.getAmount());
+            System.out.println("테스트 : sender : " + t.getSender());
+            System.out.println("테스트 : reciver : " + t.getReceiver());
+            System.out.println("테스트 : withdrawAccount잔액 : " + t.getWithdrawAccountBalance());
+            System.out.println("테스트 : depositAccount잔액 : " + t.getDepositAccountBalance());
+            System.out.println("테스트 : 잔액 : " + t.getWithdrawAccount().getBalance());
+            // System.out.println("테스트 : fullname : " +
+            // t.getWithdrawAccount().getUser().getFullname());
+            System.out.println("테스트 : ======================================");
+        });
+        // then
     }
 
     @Test
